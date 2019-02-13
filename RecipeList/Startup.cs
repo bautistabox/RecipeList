@@ -36,6 +36,14 @@ namespace RecipeList
             services.AddDbContext<RecipesDbContext>
                 (options => options.UseSqlServer(connection));
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                // set a short timeout for easy testing
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -56,6 +64,7 @@ namespace RecipeList
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSession();
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>

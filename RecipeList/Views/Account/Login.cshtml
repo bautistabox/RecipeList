@@ -4,6 +4,23 @@
     ViewBag.Title = "Log In";
     Layout = "_Layout";
 }
-
+<div align="center">
+    <div align="left" style="width: 40%">
+        <h2 class="display-4">Login</h2><br/>
+        <form action="/account/processlogin" method="post">
+            <div class="form-group">
+                <label for="inputUsername">Username</label>
+                <input type="text" id="inputUsername" class="form-control"
+                       name="Username" placeholder="Enter Your Username"/>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword">Password</label>
+                <input type="password" id="inputPassword" class="form-control"
+                       name="Password" placeholder="Enter Your Password"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
 
 
