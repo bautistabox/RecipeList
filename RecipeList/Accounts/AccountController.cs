@@ -25,6 +25,11 @@ namespace RecipeList.Accounts
         [HttpPost]
         public IActionResult ProcessRegister(RegisterInputModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("Register");
+            }
+            
             var user = new User
             {
                 Email = model.Email,
@@ -49,37 +54,43 @@ namespace RecipeList.Accounts
         [HttpPost]
         public IActionResult ProcessLogin(LoginInputModel model)
         {
-            var user = new User
+            if (!ModelState.IsValid)
             {
-                Username = model.Username,
-                Password = model.Password
-            };
-
-            var uNameExists = _db.Users.Any(u => u.Username == user.Username);
-            if (!uNameExists)
-            {
-                return RedirectToAction("Login");
-            }
-
-            var dbUser = _db.Users.Single(u => u.Username == user.Username);
-            if (user.Password != dbUser.Password)
-            {
-                Console.WriteLine("Passwords Do Not Match");
-                return RedirectToAction("Login");
+                return View("Login");
             }
             
+            var dbUser = _db.Users.FirstOrDefault(u => u.Username == model.Username);
+            if (dbUser == null)
+            {
+                ModelState.AddModelError("Username", "The specified user or password is incorrect.");
+                return View("Login");
+            }
+            
+            if (model.Password != dbUser.Password)
+            {
+                ModelState.AddModelError("Password", "The specified user or password is incorrect.");
+                return View("Login");
+            }
+
             dbUser.LastLoginAt = DateTime.Now;
             _db.SaveChanges();
 
-            HttpContext.Session.SetString("_Username", user.Username);
-            
+            HttpContext.Session.SetInt32("_Userid", dbUser.Id);
+            HttpContext.Session.SetString("_Username", dbUser.Username);
+
             return RedirectToAction("Home");
         }
 
         [HttpGet]
         public IActionResult Home()
         {
-            return View("Login");
+            var sessionUName = HttpContext.Session.GetString("_Username");
+            if (sessionUName != null)
+            {
+                return View();
+            }
+
+            return RedirectToAction("Login");
         }
     }
 }
