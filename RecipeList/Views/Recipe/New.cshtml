@@ -1,0 +1,97 @@
+@using RecipeList.Ingredient
+@model RecipeList.Recipes.Recipe
+@{
+    var ingredients = (List<Ingredient>) ViewData["ingredients"];
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>New Recipe</title>
+</head>
+<body>
+<div align="center">
+    <div style="width: 40%" align="left">
+        <form asp-form="/recipe/new/process" method="post">
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input type="text" id="Name" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId"></label>
+                <select style="width: 100%"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea rows="3" style="width: 100%" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="Instruction"></label>
+                <textarea rows="10" style="width: 100%" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    Choose ingredients from this list:
+                    <input list="ingredients" name="myIngredient" id="ingredientInput"/>
+                </label>
+                <datalist id="ingredients">
+                    @foreach (var ing in ingredients)
+                    {
+                        <option value="@ing.Name"/>
+                    }
+                </datalist>
+            </div>
+
+            <input type="button" class="add-row" value="Add Row">
+            <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+            
+            
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $(".add-row").click(function(){
+                        var name = $("#ingredientInput").val();
+                        var markup = "<tr><td>" + name + "</td><td><input type=\"text\" style=\"width: 100%;\"/></td>" +
+                            "<td><select><option>cup</option><option>oz</option></select></td></tr>";
+                        $("#ingredientInput").val("");
+                        $("table tbody").append(markup);
+                    });
+        
+                    // Find and remove selected table rows
+//                    $(".delete-row").click(function(){
+//                        $("table tbody").find('input[name="record"]').each(function(){
+//                            if($(this).is(":checked")){
+//                                $(this).parents("tr").remove();
+//                            }
+//                        });
+//                    });
+                });    
+            </script>
+            
+            <div>
+                <table class="table table-bordered" id="myTable">
+                    <thead>
+                    <tr>
+                        <th scope="col">Ingredient</th>
+                        <th scope="col" style="width: 10%">Amount</th>
+                        <th scope="col" style="width: 10%">Unit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <br/>
+            <div class="form-group">
+                <label asp-for="Photo"></label>
+                <input type="file" class="form-control-file"/>
+            </div>
+            <div align="center">
+                <input type="submit" value="Add Recipe" class="btn btn-primary"/>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+</body>
+</html>

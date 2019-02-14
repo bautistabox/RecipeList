@@ -41,8 +41,8 @@ namespace RecipeList.Accounts
 
             _db.Users.Add(user);
             _db.SaveChanges();
-
-            return RedirectToAction("Login");
+            
+          return RedirectToAction("Login");
         }
 
         [HttpGet]
@@ -78,11 +78,11 @@ namespace RecipeList.Accounts
             HttpContext.Session.SetInt32("_Userid", dbUser.Id);
             HttpContext.Session.SetString("_Username", dbUser.Username);
 
-            return RedirectToAction("Home");
+            return RedirectToAction("Profile");
         }
 
         [HttpGet]
-        public IActionResult Home()
+        public IActionResult Profile()
         {
             var sessionUName = HttpContext.Session.GetString("_Username");
             if (sessionUName != null)
