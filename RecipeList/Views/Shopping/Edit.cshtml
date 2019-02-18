@@ -1,23 +1,18 @@
-@model RecipeList.Shopping.ShoppingList
+@model RecipeList.Shopping.ShoppingListItems
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
-<!DOCTYPE html>
-
 <html>
-<head>
-    <title>New Shopping List</title>
-</head>
 <body>
-<h2>New Shopping List</h2>
+<h2>Edit Shopping List</h2>
 <div align="center">
     <div style="width: 40%" align="left">
-        <form action="/shopping/process" id="myForm" method="post">
+        <form action="/shopping/update" id="myForm" method="post">
             <div class="form-group">
-                <label asp-for="Name"></label>
-                <input type="text" id="Name" name="title" placeholder="ex. Thanksgiving Day List" class="form-control"/>
+                <label for="Name">Name</label>
+                <input type="text" id="Name" name="title" value="@Model.listName" class="form-control"/>
             </div>
 
             <div class="form-group" align="center">
@@ -34,25 +29,27 @@
                 $(document).ready(function() {
                     $("#add-row").click(function() {
                         var name = $("#listItemInput").val();
-                        var markup = "<tr><td class='listItem" + name + "'>" +
-                            name +
+                        var markup = "<tr><td class='listItem" + name + "'>" + name +
                             "</td><td><button type='button' class='close' " +
                             "aria-label='Close'><span aria-hidden='true'>&times;</span></button></td></tr>";
                         $("#listItemInput").val("");
                         $("table tbody").append(markup);
                     });
-
                     $("#create-list").click(function() {
                         var table = document.getElementById('myTable');
                         var title = document.getElementById('Name').value;
+                        
                         var itemListElements = $('td[class^="listItem"]');
                         
                         for (var i = 0; i < itemListElements.length; i++) {
                             itemList.push(itemListElements[i].innerHTML);
                         }
-                        var data = { Name: title, Len: itemList.length, Items: itemList};
+
+                        var data = { Name: title, Len: itemList.length, Items: itemList, ListId: @Model.listId};
 
                         document.getElementById('data').value = JSON.stringify(data);
+
+
                         $('#myForm').submit();
                     });
                     $('#myTable').on('click',
@@ -73,11 +70,22 @@
                         </tr>
                         </thead>
                         <tbody>
+                        @foreach (var item in Model.listItems)
+                        {
+                            <tr>
+                                <td>@item</td>
+                                <td>
+                                    <button type="button" class="close" aria-label="Close">
+                                        <span aria-hidden='true'>&times;</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                     <br/>
                     <div align="center">
-                        <button type="button" id="create-list" class="btn btn-primary">Create List</button>
+                        <button type="button" id="create-list" class="btn btn-primary">Save</button>
                     </div>
                     <input name="Data" id="data" hidden="true"/>
                 </div>

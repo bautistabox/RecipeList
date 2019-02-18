@@ -1,4 +1,4 @@
-@* @model TModel *@
+@model RecipeList.Shopping.ShoppingListItems
 
 <!DOCTYPE html>
 
@@ -7,8 +7,28 @@
     <title>Shopping List</title>
 </head>
 <body>
-<div align="right">
-    <a class="btn btn-primary" style="color: #fff" href="new">Create a new shopping list!</a>
+<div align="center">
+    <div style="width: 50%" class="border border-primary">
+        <div align="right" style="padding: 5%">
+            <div>
+                <a class="btn btn-primary" style="color: #fff" href="new">New Shopping List</a>
+                <a class="btn btn-primary" style="color: #fff" href="edit">Edit</a>
+                </div>
+        </div>
+        <div align="center" style="padding: 5%">
+            <table class="table-sm table-bordered">
+                <tr>
+                    <th>@Model.listName</th>
+                </tr>
+                @foreach (var item in Model.listItems)
+                {
+                    <tr>
+                        <td>@item</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
 </div>
 </body>
 </html>

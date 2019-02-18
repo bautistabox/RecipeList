@@ -41,7 +41,7 @@ namespace RecipeList
             services.AddSession(options =>
             {
                 // set a short timeout for easy testing
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
             });
 

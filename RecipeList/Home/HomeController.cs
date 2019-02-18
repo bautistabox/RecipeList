@@ -15,6 +15,7 @@ namespace RecipeList.Home
             var sessionUName = HttpContext.Session.GetString("_Username");
             if (sessionUName != null)
             {
+                Console.WriteLine("LOGGED IN");
                 return RedirectToAction("Profile", "Account");
             }
 
