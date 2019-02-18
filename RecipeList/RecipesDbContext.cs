@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeList.Accounts;
 using RecipeList.Ingredient;
+using RecipeList.Shopping;
 
 namespace RecipeList
 {
@@ -10,5 +11,8 @@ namespace RecipeList
 
         public DbSet<User> Users { get; set; }
         public DbSet<Ingredient.Ingredient> Ingredients { get; set; }
+        public DbSet<ShoppingList> Lists { get; set; }
+        
+        public DbSet<ListItem> ListItems { get; set; }
     }
 }

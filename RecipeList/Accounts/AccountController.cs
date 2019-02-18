@@ -51,6 +51,13 @@ namespace RecipeList.Accounts
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         public IActionResult ProcessLogin(LoginInputModel model)
         {
