@@ -1,0 +1,30 @@
+@model RecipeList.Shopping.ShoppingListItems
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>View Shopping List</title>
+</head>
+<body>
+<div>
+    <div align="center" style="padding: 5%">
+        <table class="table-sm table-bordered">
+            <tr>
+                <th>@Model.listName</th>
+            </tr>
+            @foreach (var item in Model.listItems)
+            {
+                <tr>
+                    <td>@item</td>
+                </tr>
+            }
+        </table>
+        <br/>
+        <tr>
+            <a class="btn btn-primary" href="edit?listId=@Model.listId">Edit</a>
+        </tr>
+    </div>
+</div>
+</body>
+</html>

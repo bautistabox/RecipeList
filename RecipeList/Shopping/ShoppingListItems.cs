@@ -1,4 +1,5 @@
 using System;
+using Microsoft.IdentityModel.Tokens;
 
 namespace RecipeList.Shopping
 {
@@ -12,5 +13,6 @@ namespace RecipeList.Shopping
         public string listName { get; set; }
         public string[] listItems { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

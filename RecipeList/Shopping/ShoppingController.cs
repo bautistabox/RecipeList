@@ -40,17 +40,22 @@ namespace RecipeList.Shopping
                     listId = u.Id,
                     listName = u.Name,
                     listOwner = sessionUName,
-                    listOwnerId = sessionUId
+                    listOwnerId = sessionUId,
+                    UpdatedAt = u.UpdatedAt ?? DateTime.Now,
+                    CreatedAt = u.CreatedAt
                 })
-                .SingleOrDefault();
-
-            var items = _db
-                .ListItems
-                .Where(l => l.ListId == model.listId)
-                .Select(i => i.ItemName)
                 .ToList();
 
-            model.listItems = items.ToArray();
+            foreach (var mod in model)
+            {
+                var items = _db
+                    .ListItems
+                    .Where(l => l.ListId == mod.listId)
+                    .Select(i => i.ItemName)
+                    .ToList();
+
+                mod.listItems = items.ToArray();
+            }
 
             return View(model);
         }
@@ -69,7 +74,7 @@ namespace RecipeList.Shopping
         }
 
         [HttpGet]
-        public IActionResult Edit()
+        public IActionResult View(int listId)
         {
             var sessionUName = HttpContext.Session.GetString("_Username");
             var sessionUId = HttpContext.Session.GetInt32("_Userid") ?? -1;
@@ -80,7 +85,38 @@ namespace RecipeList.Shopping
 
             var model = _db
                 .Lists
-                .Where(u => u.UserId == sessionUId)
+                .Where(u => u.Id == listId)
+                .Select(u => new ShoppingListItems
+                {
+                    listId = u.Id,
+                    listName = u.Name,
+                    listOwner = sessionUName,
+                    listOwnerId = sessionUId
+                }).SingleOrDefault();
+            var items = _db
+                .ListItems
+                .Where(l => l.ListId == model.listId)
+                .Select(i => i.ItemName)
+                .ToList();
+
+            model.listItems = items.ToArray();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int listId)
+        {
+            var sessionUName = HttpContext.Session.GetString("_Username");
+            var sessionUId = HttpContext.Session.GetInt32("_Userid") ?? -1;
+            if (sessionUName == null || sessionUId == -1)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var model = _db
+                .Lists
+                .Where(u => u.Id == listId)
                 .Select(u => new ShoppingListItems
                 {
                     listId = u.Id,
@@ -112,7 +148,8 @@ namespace RecipeList.Shopping
 
             var slim = JsonConvert.DeserializeObject<ShoppingListInputModel>(sldi.Data);
             Console.WriteLine(slim.ListId);
-
+            for (var i = 0; i != slim.Items.Length; i++)
+                Console.WriteLine(slim.Items[i]);
             var query =
                 from l in _db.Lists
                 where l.Id == slim.ListId

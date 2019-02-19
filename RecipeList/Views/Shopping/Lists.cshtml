@@ -1,4 +1,4 @@
-@model RecipeList.Shopping.ShoppingListItems
+@model List<RecipeList.Shopping.ShoppingListItems>
 
 <!DOCTYPE html>
 
@@ -8,27 +8,30 @@
 </head>
 <body>
 <div align="center">
-    <div style="width: 50%" class="border border-primary">
-        <div align="right" style="padding: 5%">
-            <div>
-                <a class="btn btn-primary" style="color: #fff" href="new">New Shopping List</a>
-                <a class="btn btn-primary" style="color: #fff" href="edit">Edit</a>
-                </div>
-        </div>
-        <div align="center" style="padding: 5%">
-            <table class="table-sm table-bordered">
-                <tr>
-                    <th>@Model.listName</th>
-                </tr>
-                @foreach (var item in Model.listItems)
-                {
-                    <tr>
-                        <td>@item</td>
-                    </tr>
-                }
-            </table>
+    <div align="right" style="padding: 5%">
+        <div class="btn-group">
+            <a class="btn btn-primary" style="color: #fff" href="new">New Shopping List</a>
         </div>
     </div>
+
+    @foreach (var item in Model)
+    {
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">@item.listName</h5>
+                <div class="btn-group">
+                    <a class="btn btn-primary" href="edit?listId=@item.listId">Edit</a>
+                    <a class="btn btn-primary" href="view?listId=@item.listId">View</a>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                @item.UpdatedAt
+            </div>
+        </div>
+        <br/>
+    }
+
 </div>
+
 </body>
 </html>
