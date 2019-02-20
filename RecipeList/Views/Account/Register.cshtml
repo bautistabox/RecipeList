@@ -9,26 +9,28 @@
     <div align="left" style="width: 40%">
         <h2 class="display-4">Register</h2><br/>
         <form action="/account/processregister" method="post">
-            <div class="form-group">              
+            <div class="form-group">
                 <label for="inputEmail">Email Address</label>
                 <input type="email" id="inputEmail" class="form-control" aria-describedby="emailHelp"
-                       name="Email" placeholder="Enter E-Mail" />
-                <small id="inputEmail" 
-                       class="text-body text-muted">We'll never share your email with anyone else.</small>
+                       name="Email" placeholder="Enter E-Mail"/>
+                <small id="inputEmail"
+                       class="text-body text-muted">
+                    We'll never share your email with anyone else.
+                </small>
             </div>
             <div class="form-group">
                 <label for="inputUsername">Username</label>
                 <input type="text" id="inputUsername" class="form-control"
-                       name="Username" placeholder="Pick a Username" />
+                       name="Username" placeholder="Pick a Username"/>
             </div>
             <div class="form-group">
                 <label for="inputDisplayName">Display Name</label>
-                <input type="text" id="inputDisplayName" class="form-control" 
-                       name="DisplayName" placeholder="Pick a Display Name" />
+                <input type="text" id="inputDisplayName" class="form-control"
+                       name="DisplayName" placeholder="Pick a Display Name"/>
             </div>
             <div class="form-group">
                 <label for="inputPassword">Password</label>
-                <input type="password" id="inputPassword" class="form-control" 
+                <input type="password" id="inputPassword" class="form-control"
                        name="Password" placeholder="Choose a Password"/>
             </div>
             <div class="form-group">
@@ -36,7 +38,10 @@
                 <input type="password" id="inputConfirmPassword" class="form-control"
                        name="ConfirmPassword" placeholder="Re-Enter Password"/>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a class="btn btn-primary" href="javascript:history.back()">Go Back</a>
+            </div>
         </form>
     </div>
 </div>

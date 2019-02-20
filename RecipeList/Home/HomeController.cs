@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RecipeList.Authentication;
 
 namespace RecipeList.Home
 {
@@ -13,13 +11,12 @@ namespace RecipeList.Home
         public IActionResult Index()
         {
             var sessionUName = HttpContext.Session.GetString("_Username");
-            if (sessionUName != null)
+            if (sessionUName == null)
             {
-                Console.WriteLine("LOGGED IN");
-                return RedirectToAction("Profile", "Account");
+                return View();
             }
 
-            return View();
+            return RedirectToAction("Profile", "Account");
         }
 
         public IActionResult Privacy()

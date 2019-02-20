@@ -1,9 +1,8 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Session;
+using RecipeList.Authentication;
 
 namespace RecipeList.Accounts
 {
@@ -88,16 +87,11 @@ namespace RecipeList.Accounts
             return RedirectToAction("Profile");
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult Profile()
         {
-            var sessionUName = HttpContext.Session.GetString("_Username");
-            if (sessionUName != null)
-            {
-                return View();
-            }
-
-            return RedirectToAction("Login");
+            return View();
         }
     }
 }

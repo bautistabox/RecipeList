@@ -1,8 +1,10 @@
+@using RecipeList.Shopping
 @model RecipeList.Shopping.ShoppingList
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
+    var items = (List<string>) ViewData["items"];
 }
 <!DOCTYPE html>
 
@@ -15,6 +17,11 @@
 <div align="center">
     <div style="width: 40%" align="left">
         <form action="/shopping/process" id="myForm" method="post">
+            <div align="center">
+                <a class="btn btn-primary" href="javascript:history.back()">Go Back</a>
+            </div>
+            <br/>
+            
             <div class="form-group">
                 <label asp-for="Name"></label>
                 <input type="text" id="Name" name="title" placeholder="ex. Thanksgiving Day List" class="form-control"/>
@@ -23,8 +30,14 @@
             <div class="form-group" align="center">
                 <label for="listItemInput">
                     Add Items to your list:
-                    <input name="myListItem" id="listItemInput"/>
+                    <input list="items" name="myListItem" id="listItemInput"/>
                 </label>
+                <datalist id="items">
+                    @foreach (var i in items)
+                    {
+                        <option value="@i"/>
+                    }
+                </datalist>
                 <input type="button" id="add-row" class="btn btn-primary" value="Add Item"/>
             </div>
             <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>

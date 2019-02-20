@@ -1,18 +1,14 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RecipeList.Home;
-using WebApiContrib.Formatting;
+using RecipeList.Authentication;
 
 namespace RecipeList.Shopping
 {
+    [Authorize]
     public class ShoppingController : Controller
     {
         private readonly RecipesDbContext _db;
@@ -25,12 +21,8 @@ namespace RecipeList.Shopping
         [HttpGet]
         public IActionResult Lists()
         {
+            var sessionUId = HttpContext.Session.GetInt32("_Userid");
             var sessionUName = HttpContext.Session.GetString("_Username");
-            var sessionUId = HttpContext.Session.GetInt32("_Userid") ?? -1;
-            if (sessionUName == null || sessionUId == -1)
-            {
-                return RedirectToAction("Login", "Account");
-            }
 
             var model = _db
                 .Lists
@@ -40,7 +32,7 @@ namespace RecipeList.Shopping
                     listId = u.Id,
                     listName = u.Name,
                     listOwner = sessionUName,
-                    listOwnerId = sessionUId,
+                    listOwnerId = sessionUId.Value,
                     UpdatedAt = u.UpdatedAt ?? DateTime.Now,
                     CreatedAt = u.CreatedAt
                 })
@@ -63,25 +55,29 @@ namespace RecipeList.Shopping
         [HttpGet]
         public IActionResult New()
         {
-            var sessionUName = HttpContext.Session.GetString("_Username");
-            var sessionUId = HttpContext.Session.GetInt32("_Userid") ?? -1;
-            if (sessionUName == null || sessionUId == -1)
+            var sessionUId = HttpContext.Session.GetInt32("_Userid");
+            var dupeList = new List<string>();
+            foreach (var item in _db.ListItems.ToList())
             {
-                return RedirectToAction("Login", "Account");
+                var flag = false;
+
+                for (var i = 0; i != dupeList.Count; i++)
+                    if (dupeList[i].Equals(item.ItemName))
+                        flag = true;
+
+                if (!flag || dupeList.Count == 0)
+                    dupeList.Add(item.ItemName);
             }
 
+            ViewData["items"] = dupeList;
             return View();
         }
 
         [HttpGet]
         public IActionResult View(int listId)
         {
+            var sessionUId = HttpContext.Session.GetInt32("_Userid");
             var sessionUName = HttpContext.Session.GetString("_Username");
-            var sessionUId = HttpContext.Session.GetInt32("_Userid") ?? -1;
-            if (sessionUName == null || sessionUId == -1)
-            {
-                return RedirectToAction("Login", "Account");
-            }
 
             var model = _db
                 .Lists
@@ -91,7 +87,7 @@ namespace RecipeList.Shopping
                     listId = u.Id,
                     listName = u.Name,
                     listOwner = sessionUName,
-                    listOwnerId = sessionUId
+                    listOwnerId = sessionUId.Value
                 }).SingleOrDefault();
             var items = _db
                 .ListItems
@@ -107,13 +103,9 @@ namespace RecipeList.Shopping
         [HttpGet]
         public IActionResult Edit(int listId)
         {
+            var sessionUId = HttpContext.Session.GetInt32("_Userid");
             var sessionUName = HttpContext.Session.GetString("_Username");
-            var sessionUId = HttpContext.Session.GetInt32("_Userid") ?? -1;
-            if (sessionUName == null || sessionUId == -1)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
+            
             var model = _db
                 .Lists
                 .Where(u => u.Id == listId)
@@ -122,7 +114,7 @@ namespace RecipeList.Shopping
                     listId = u.Id,
                     listName = u.Name,
                     listOwner = sessionUName,
-                    listOwnerId = sessionUId
+                    listOwnerId = sessionUId.Value
                 })
                 .SingleOrDefault();
             var items = _db
@@ -131,7 +123,23 @@ namespace RecipeList.Shopping
                 .Select(i => i.ItemName)
                 .ToList();
 
+
             model.listItems = items.ToArray();
+            
+            var dupeList = new List<string>();
+            foreach (var item in _db.ListItems.ToList())
+            {
+                var flag = false;
+
+                for (var i = 0; i != dupeList.Count; i++)
+                    if (dupeList[i].Equals(item.ItemName))
+                        flag = true;
+
+                if (!flag || dupeList.Count == 0)
+                    dupeList.Add(item.ItemName);
+            }
+
+            ViewData["items"] = dupeList.ToList();
 
             return View(model);
         }
@@ -139,13 +147,6 @@ namespace RecipeList.Shopping
         [HttpPost]
         public IActionResult Update(ShoppingListDataInput sldi)
         {
-            var sessionUName = HttpContext.Session.GetString("_Username");
-            var uId = HttpContext.Session.GetInt32("_Userid") ?? -1;
-            if (sessionUName == null || uId == -1)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             var slim = JsonConvert.DeserializeObject<ShoppingListInputModel>(sldi.Data);
             Console.WriteLine(slim.ListId);
             for (var i = 0; i != slim.Items.Length; i++)
@@ -194,19 +195,13 @@ namespace RecipeList.Shopping
 
             _db.SaveChanges();
 
-            return View("Process");
+            return RedirectToAction("view", "shopping", new {slim.ListId});
         }
 
         [HttpPost]
         public IActionResult Process(ShoppingListDataInput sldi)
         {
-            var sessionUName = HttpContext.Session.GetString("_Username");
-            if (sessionUName == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var uId = HttpContext.Session.GetInt32("_Userid") ?? -1;
+            var uId = HttpContext.Session.GetInt32("_Userid");
             if (uId == -1)
             {
                 return RedirectToAction("Login", "Account");
@@ -217,7 +212,7 @@ namespace RecipeList.Shopping
             var shoppingList = new ShoppingList
             {
                 Name = slim.Name,
-                UserId = uId,
+                UserId = uId.Value,
                 CreatedAt = DateTime.Now
             };
 
@@ -237,7 +232,29 @@ namespace RecipeList.Shopping
 
             _db.SaveChanges();
 
-            return View();
+            return RedirectToAction("lists");
+        }
+
+        [HttpPost]
+        public IActionResult Delete(ShoppingListItems model)
+        {
+            var deleteListItems = from listItem in _db.ListItems
+                where listItem.ListId == model.listId
+                select listItem;
+
+            foreach (var listItem in deleteListItems)
+                _db.ListItems.Remove(listItem);
+            
+            var deleteList = from list in _db.Lists
+                where list.Id == model.listId
+                select list;
+
+            foreach (var list in deleteList)
+                _db.Lists.Remove(list);
+
+            _db.SaveChanges();
+
+            return RedirectToAction("lists");
         }
     }
 }

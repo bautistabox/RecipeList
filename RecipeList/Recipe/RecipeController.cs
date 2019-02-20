@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
+using RecipeList.Authentication;
 
 namespace RecipeList.Recipes
 {
+    [Authorize]
     public class RecipeController : Controller
     {
         private readonly RecipesDbContext _db;
@@ -17,28 +17,14 @@ namespace RecipeList.Recipes
         [HttpGet]
         public IActionResult Recipes()
         {
-            var sessionUName = HttpContext.Session.GetString("_Username");
-            if (sessionUName != null)
-            {
-                return View();
-            }
-
-            return RedirectToAction("Login", "Account");
+            return View();
         }
 
         [HttpGet]
         public IActionResult New()
         {
-            var sessionUName = HttpContext.Session.GetString("_Username");
-            if (sessionUName == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             var dbIngredients = _db.Ingredients.ToList();
-
             ViewData["ingredients"] = dbIngredients;
-
             return View();
         }
     }
