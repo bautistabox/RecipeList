@@ -14,24 +14,24 @@
     <div style="width: 40%" align="left">
         <form asp-form="/recipe/new/process" method="post">
             <div class="form-group">
-                <label asp-for="Name"></label>
+                <label asp-for="Name" style="color: white"></label>
                 <input type="text" id="Name" class="form-control"/>
             </div>
             <div class="form-group">
-                <label asp-for="CategoryId"></label>
+                <label asp-for="CategoryId" style="color: white"></label>
                 <select style="width: 100%"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Description"></label>
+                <label asp-for="Description" style="color: white"></label>
                 <textarea rows="3" style="width: 100%" class="form-control"></textarea>
             </div>
             <div class="form-group">
-                <label asp-for="Instruction"></label>
+                <label asp-for="Instruction" style="color: white"></label>
                 <textarea rows="10" style="width: 100%" class="form-control"></textarea>
             </div>
 
             <div class="form-group">
-                <label>
+                <label style="color: white">
                     Choose ingredients from this list:
                     <input list="ingredients" name="myIngredient" id="ingredientInput"/>
                 </label>
@@ -43,7 +43,7 @@
                 </datalist>
             </div>
 
-            <input type="button" class="add-row" value="Add Row">
+            <input class="btn btn-primary" type="button" class="add-row" value="Add Row" style="float: right">
             <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 
 
@@ -71,7 +71,7 @@
             </script>
 
             <div>
-                <table class="table table-bordered" id="myTable">
+                <table class="table table-bordered table-light" id="myTable">
                     <thead>
                     <tr>
                         <th scope="col">Ingredient</th>
@@ -85,11 +85,11 @@
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="Photo"></label>
-                <input type="file" class="form-control-file"/>
+                <label asp-for="Photo" style="color: white"></label>
+                <input style="color: white" type="file" class="form-control-file"/>
             </div>
             <div align="center">
-                <input type="submit" value="Add Recipe" class="btn btn-primary"/>
+                <input type="submit" value="Add Recipe" class="btn btn-info"/>
             </div>
 
         </form>

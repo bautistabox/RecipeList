@@ -9,132 +9,132 @@
 <html>
 <body background="/bluebg.jpg">
 <div align="center">
-    <h2 class="display-4">Edit Shopping List</h2>
-</div>
-<div align="center">
-    <div style="width: 40%" align="left">
+    <h2 class="display-4" style="color: #f0ead6">Edit Shopping List</h2>
+    <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
+    <br/><br/>
+    <form id="deleteForm" action="/shopping/delete" method="POST">
+        <input type="hidden" name="listId" value="@Model.listId"/>
+        <input type="hidden" name="listItems" value="@Model.listItems"/>
+    </form>
+    <div align="center">
+        <div class="btn btn-group">
+            <button type="button" id="create-list" class="btn btn-info">Save</button>
+            <button class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete">
+                Delete
+            </button>
+        </div>
+    </div>
+    <div style="width: 45%" align="left">
+        <br/>
         <form action="/shopping/update" id="myForm" method="post">
-            <div align="center">
-                <a class="btn btn-primary" href="javascript:history.back()">Go Back</a>
-            </div>
-            <br/>
+            <div style="padding: 15px; background: #f0ead6">
+                <div class="form-group">
+                    <label for="Name" style="color: #1560bd">Name</label>
+                    <input type="text" id="Name" name="title" value="@Model.listName" class="form-control"/>
+                </div>
 
-            <div class="form-group">
-                <label for="Name">Name</label>
-                <input type="text" id="Name" name="title" value="@Model.listName" class="form-control"/>
-            </div>
-
-            <div class="form-group" align="center">
-                <label for="listItemInput">
-                    Add Items to your list:
-                    <input list="items" name="myListItem" id="listItemInput"/>
-                </label>
-                <datalist id="items">
-                    @foreach (var i in items)
-                    {
-                        <option value="@i"/>
-                    }
-                </datalist>
-                <input type="button" id="add-row" class="btn btn-primary" value="Add Item"/>
-            </div>
-            <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-            <script type="text/javascript">
-                var itemList = [];
-
-                $(document).ready(function() {
-                    $("#add-row").click(function() {
-                        var name = $("#listItemInput").val();
-                        var markup = "<tr><td class='listItem" +
-                            name +
-                            "'>" +
-                            name +
-                            "</td><td><button type='button' class='close' " +
-                            "aria-label='Close'><span aria-hidden='true'>&times;</span></button></td></tr>";
-                        $("#listItemInput").val("");
-                        $("table tbody").append(markup);
-                    });
-                    $("#delete-list").click(function() {
-                        $('#deleteForm').submit();
-                    });
-                    $("#create-list").click(function() {
-                        var table = document.getElementById('myTable');
-                        var title = document.getElementById('Name').value;
-
-                        var itemListElements = $('td[class^="listItem"]');
-
-                        for (var i = 0; i < itemListElements.length; i++) {
-                            itemList.push(itemListElements[i].innerHTML);
-                        }
-
-                        var data = { Name: title, Len: itemList.length, Items: itemList, ListId: @Model.listId };
-
-                        document.getElementById('data').value = JSON.stringify(data);
-
-                        $('#myForm').submit();
-                    });
-                    $('#myTable').on('click',
-                        'button[type="button"]',
-                        function() {
-                            $(this).closest('tr').remove();
-                        });
-                });
-            </script>
-
-            <div align="center">
-                <div style="width: 65%">
-                    <table class="table table-striped" id="myTable">
-                        <thead>
-                        <tr>
-                            <th scope="col" style="width: 90%">Items</th>
-                            <th scope="col" style="width: 10%"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var item in Model.listItems)
+                <div class="form-group" align="center">
+                    <label for="listItemInput" style="color: #1560bd">
+                        Add Items to your list:
+                        <input list="items" name="myListItem" id="listItemInput"/>
+                    </label>
+                    <datalist id="items">
+                        @foreach (var i in items)
                         {
-                            <tr>
-                                <td class="listItem" + @item>@item</td>
-                                <td>
-                                    <button type="button" class="close" aria-label="Close">
-                                        <span aria-hidden='true'>&times;</span>
-                                    </button>
-                                </td>
-                            </tr>
+                            <option value="@i"/>
                         }
-                        </tbody>
-                    </table>
-                    <br/>
+                    </datalist>
+                    <input type="button" id="add-row" class="btn btn-info" value="Add Item"/>
+                </div>
+                <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+                <script type="text/javascript">
+                    var itemList = [];
 
-                    <input name="Data" id="data" hidden="true"/>
+                    $(document).ready(function() {
+                        $("#add-row").click(function() {
+                            var name = $("#listItemInput").val();
+                            var markup = "<tr><td class='listItem" +
+                                name +
+                                "'>" +
+                                name +
+                                "</td><td><button type='button' class='close' " +
+                                "aria-label='Close'><span aria-hidden='true'>&times;</span></button></td></tr>";
+                            $("#listItemInput").val("");
+                            $("table tbody").append(markup);
+                        });
+                        $("#delete-list").click(function() {
+                            $('#deleteForm').submit();
+                        });
+                        $("#create-list").click(function() {
+                            var table = document.getElementById('myTable');
+                            var title = document.getElementById('Name').value;
+
+                            var itemListElements = $('td[class^="listItem"]');
+
+                            for (var i = 0; i < itemListElements.length; i++) {
+                                itemList.push(itemListElements[i].innerHTML);
+                            }
+
+                            var data = { Name: title, Len: itemList.length, Items: itemList, ListId: @Model.listId };
+
+                            document.getElementById('data').value = JSON.stringify(data);
+
+                            $('#myForm').submit();
+                        });
+                        $('#myTable').on('click',
+                            'button[type="button"]',
+                            function() {
+                                $(this).closest('tr').remove();
+                            });
+                    });
+                </script>
+
+                <div align="center">
+                    <div style="width: 65%">
+                        <table class="table table-striped table-info" id="myTable">
+                            <thead>
+                            <tr>
+                                <th scope="col" style="width: 90%">Items</th>
+                                <th scope="col" style="width: 10%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in Model.listItems)
+                            {
+                                <tr>
+                                    <td class="listItem" + @item>@item</td>
+                                    <td>
+                                        <button type="button" class="close" aria-label="Close">
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                        <br/>
+
+                        <input name="Data" id="data" hidden="true"/>
+                    </div>
                 </div>
             </div>
         </form>
-        <form id="deleteForm" action="/shopping/delete" method="POST">
-            <input type="hidden" name="listId" value="@Model.listId"/>
-            <input type="hidden" name="listItems" value="@Model.listItems"/>
-        </form>
-        <div align="center">
-            <div class="btn btn-group">
-                <button type="button" id="create-list" class="btn btn-primary">Save</button>
-                <button class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete">
-                    Delete
-                </button>
-            </div>
-        </div>
-        <script>
-            $('#confirm-delete').on('show.bs.modal', function(e) {
-                $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-            });
-        </script>
         
+        <script>
+            $('#confirm-delete').on('show.bs.modal',
+                function(e) {
+                    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+                });
+        </script>
+
         <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="display-4">Confirm Deletion</h6>
+                        <h6 class="display-4" style="color: red">Confirm Deletion</h6>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete the list titled: <b>@Model.listName</b>?
+                        Are you sure you want to delete the list titled: <b style="color: red">@Model.listName</b>?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">No, Take me back</button>
@@ -143,7 +143,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 </div>
 </body>

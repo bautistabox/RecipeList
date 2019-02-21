@@ -2,41 +2,53 @@
     ViewData["Title"] = "Home Page";
 }
 <style>
-    .carouselImg img {
+    .carousel-inner img {
         width: auto;
-        height: 225px;
-        max-height: 225px;
+        height: 400px;
+        max-height: 400px;
     }
 </style>
 <body>
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-3" style="color: #f0ead6">Welcome</h1>
 </div>
 
-<br><br>
+<br/>
+<div align="center">
+    <div class="btn-group">
+        <a class="btn btn-info" href="/account/login">Login</a>
+        <a class="btn btn-info" href="/account/register">Get Started</a>
+    </div>
+</div>
+<br/>
 
 
 <div align="center">
-    <div id="carouselSlides" class="carousel slide" data-ride="carousel">
+    <div id="carouselSlides" class="carousel slide" data-ride="carousel" data-interval="3000">
         <ol class="carousel-indicators">
             <li data-target="#carouselSlides" data-slide-to="0" class="active"></li>
             <li data-target="#carouselSlides" data-slide-to="1"></li>
+            <li data-target="#carouselSlides" data-slide-to="2"></li>
+            <li data-target="#carouselSlides" data-slide-to="3"></li>
+            
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="d-block w-50" src="/Shopping List Page.PNG" alt="Second slide">
+                <img class="d-block" src="/Shopping List Page.PNG" alt="Second slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-50" src="/AddIngredients.PNG" alt="First slide">
+                <img class="d-block" src="/AddIngredients.PNG" alt="First slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block" src="/AddToList.PNG" alt="First slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block" src="/AddRecipePage.PNG" alt="First slide">
             </div>
 
         </div>
     </div>
     <br/>
 
-    <div class="btn-group">
-        <a class="btn btn-success" href="/account/login">Login</a>
-        <a class="btn btn-success" href="/account/register">Get Started</a>
-    </div>
 </div>
 </body>

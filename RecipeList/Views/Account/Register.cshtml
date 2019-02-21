@@ -1,47 +1,73 @@
-@using RecipeList.Accounts
-@* @model RecipeList.Accounts.RegisterInputModel *@
+@model RecipeList.Accounts.RegisterInputModel
 
 @{
     ViewBag.Title = "Register";
     Layout = "_Layout";
 }
+<style type="text/css">
+    .field-validation-error { color: #ff0000; }
+
+    .field-validation-valid { display: none; }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid { display: none; }
+</style>
+
 <div align="center">
+    <h2 class="display-4" style="color:#f0ead6">Register</h2><br/>
     <div align="left" style="width: 40%">
-        <h2 class="display-4">Register</h2><br/>
-        <form action="/account/processregister" method="post">
-            <div class="form-group">
-                <label for="inputEmail">Email Address</label>
-                <input type="email" id="inputEmail" class="form-control" aria-describedby="emailHelp"
-                       name="Email" placeholder="Enter E-Mail"/>
-                <small id="inputEmail"
-                       class="text-body text-muted">
-                    We'll never share your email with anyone else.
-                </small>
-            </div>
-            <div class="form-group">
-                <label for="inputUsername">Username</label>
-                <input type="text" id="inputUsername" class="form-control"
-                       name="Username" placeholder="Pick a Username"/>
-            </div>
-            <div class="form-group">
-                <label for="inputDisplayName">Display Name</label>
-                <input type="text" id="inputDisplayName" class="form-control"
-                       name="DisplayName" placeholder="Pick a Display Name"/>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword">Password</label>
-                <input type="password" id="inputPassword" class="form-control"
-                       name="Password" placeholder="Choose a Password"/>
-            </div>
-            <div class="form-group">
-                <label for="inputConfirmPassword">Confirm Password</label>
-                <input type="password" id="inputConfirmPassword" class="form-control"
-                       name="ConfirmPassword" placeholder="Re-Enter Password"/>
-            </div>
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a class="btn btn-primary" href="javascript:history.back()">Go Back</a>
+        <br/>
+
+        <form action="/account/processregister" method="post" style="background: #f0ead6">
+            <div align="center">
+                <div style="padding: 15px" align="left">
+
+                    @Html.ValidationSummary()
+                    <div class="form-group">
+                        <label for="inputEmail" style="color: #1560bd">Email Address</label>
+                        <input type="email" id="inputEmail" class="form-control" aria-describedby="emailHelp"
+                               name="Email" placeholder="Enter E-Mail"/>
+                        <small id="inputEmail"
+                               class="text-body text-muted">
+                            We'll never share your email with anyone else.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputUsername" style="color: #1560bd">Username</label>
+                        <input type="text" id="inputUsername" class="form-control"
+                               name="Username" placeholder="Pick a Username"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDisplayName" style="color: #1560bd">Display Name</label>
+                        <input type="text" id="inputDisplayName" class="form-control"
+                               name="DisplayName" placeholder="Pick a Display Name"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword" style="color: #1560bd">Password</label>
+                        <input type="password" id="inputPassword" class="form-control"
+                               name="Password" placeholder="Choose a Password"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputConfirmPassword" style="color: #1560bd">Confirm Password</label>
+                        <input type="password" id="inputConfirmPassword" class="form-control"
+                               name="ConfirmPassword" placeholder="Re-Enter Password"/>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                        <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
+    @* </div> *@
 </div>

@@ -55,7 +55,7 @@ namespace RecipeList.Shopping
         [HttpGet]
         public IActionResult New()
         {
-            var sessionUId = HttpContext.Session.GetInt32("_Userid");
+            var sessionUName = HttpContext.Session.GetString("_Username");
             var dupeList = new List<string>();
             foreach (var item in _db.ListItems.ToList())
             {
@@ -69,7 +69,9 @@ namespace RecipeList.Shopping
                     dupeList.Add(item.ItemName);
             }
 
+            
             ViewData["items"] = dupeList;
+            ViewData["username"] = sessionUName;
             return View();
         }
 

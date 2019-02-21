@@ -1,29 +1,50 @@
-@* @model TModel *@
+@model RecipeList.Accounts.LoginInputModel
 
 @{
     ViewBag.Title = "Log In";
     Layout = "_Layout";
 }
+
+<style type="text/css">
+    .field-validation-error { color: #ff0000; }
+
+    .field-validation-valid { display: none; }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid { display: none; }
+</style>
+
 <div align="center">
+    <h2 class="display-4" style="color: #f0ead6">Login</h2><br/>
     <div align="left" style="width: 40%">
-        <h2 class="display-4">Login</h2><br/>
+        <br/>
         <form action="/account/processlogin" method="post">
-            <div class="form-group">
-                <label for="inputUsername">Username</label>
-                <input type="text" id="inputUsername" class="form-control"
-                       name="Username" placeholder="Enter Your Username"/>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword">Password</label>
-                <input type="password" id="inputPassword" class="form-control"
-                       name="Password" placeholder="Enter Your Password"/>
-            </div>
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Login</button>
-                <a class="btn btn-primary" href="javascript:history.back()">Go Back</a>
+            <div style="padding: 15px; background: #f0ead6">
+                @Html.ValidationSummary()
+                <div class="form-group">
+                    <label for="inputUsername" style="color: #1560bd">Username</label>
+                    <input type="text" id="inputUsername" class="form-control"
+                           name="Username" placeholder="Enter Your Username"/>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" style="color: #1560bd">Password</label>
+                    <input type="password" id="inputPassword" class="form-control"
+                           name="Password" placeholder="Enter Your Password"/>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-info">Login</button>
+                    <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
+                </div>
             </div>
         </form>
     </div>
 </div>
-
-

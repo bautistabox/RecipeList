@@ -7,25 +7,34 @@
     <title>View Shopping List</title>
 </head>
 <body>
-<div>
-    <div align="center" style="padding: 5%">
-        <a class="btn btn-primary" href="javascript:history.back()">Go Back</a>
-        <br/><br/>
-        <table class="table-sm table-bordered">
-            <tr>
-                <th>@Model.listName</th>
-            </tr>
-            @foreach (var item in Model.listItems)
-            {
+<div align="center" style="padding: 5%">
+    <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
+</div>
+<br/>
+<div align="center">
+    <div style="width: 40%; background: #f0ead6; padding: 15px">
+
+        
+            <table class="table table-bordered table-striped table-info" style="width: 80%">
                 <tr>
-                    <td>@item</td>
+                    <th>
+                        <div align="center">@Model.listName</div>
+                    </th>
                 </tr>
-            }
-        </table>
-        <br/>
-        <tr>
-            <a class="btn btn-primary" href="edit?listId=@Model.listId">Edit</a>
-        </tr>
+                @foreach (var item in Model.listItems)
+                {
+                    <tr>
+                        <td>
+                            <div align="center">@item</div>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <br/>
+            <tr>
+                <a class="btn btn-info" href="edit?listId=@Model.listId">Edit</a>
+            </tr>
+        </>
     </div>
 </div>
 </body>
