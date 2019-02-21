@@ -35,8 +35,6 @@ namespace RecipeList.Accounts
                 return View("Register");
             }
             
-            
-
             var user = new User
             {
                 Email = model.Email,
@@ -45,7 +43,6 @@ namespace RecipeList.Accounts
                 DisplayName = model.DisplayName,
                 RegisteredAt = DateTime.Now
             };
-
 
             var dbUserName = _db.Users.SingleOrDefault(u => u.Username == user.Username);
             var dbUserEmail = _db.Users.SingleOrDefault(u => u.Email == user.Email);
@@ -66,7 +63,9 @@ namespace RecipeList.Accounts
                 }
                 return View("Register");
             }
-   
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            
             _db.Users.Add(user);
             _db.SaveChanges();
 
@@ -81,7 +80,6 @@ namespace RecipeList.Accounts
             _db.SaveChanges();
 
             // send email
-
             var fromAddress = new MailAddress("infinity.test.email@gmail.com");
             const string fromPassword = "Password1@3";
             var toEmail = new MailAddress(user.Email);
@@ -139,13 +137,6 @@ namespace RecipeList.Accounts
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
-        }
-
         [HttpPost]
         public IActionResult ProcessLogin(LoginInputModel model)
         {
@@ -160,8 +151,8 @@ namespace RecipeList.Accounts
                 ModelState.AddModelError("Username", "The specified user or password is incorrect.");
                 return View("Login");
             }
-
-            if (model.Password != dbUser.Password)
+            
+            if (!BCrypt.Net.BCrypt.Verify(model.Password, dbUser.Password))
             {
                 ModelState.AddModelError("Password", "The specified user or password is incorrect.");
                 return View("Login");
@@ -183,6 +174,13 @@ namespace RecipeList.Accounts
             return RedirectToAction("Profile");
         }
 
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+        
         [Authorize]
         [HttpGet]
         public IActionResult Profile()
