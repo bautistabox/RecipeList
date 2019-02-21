@@ -106,7 +106,7 @@ namespace RecipeList.Accounts
                 Body = body
             })
 
-                clientDetails.Send(message);
+            clientDetails.Send(message);
 
             Console.WriteLine("Email Sent");
 
