@@ -34,7 +34,7 @@ namespace RecipeList.Accounts
             {
                 return View("Register");
             }
-            
+
             var user = new User
             {
                 Email = model.Email,
@@ -46,26 +46,29 @@ namespace RecipeList.Accounts
 
             var dbUserName = _db.Users.SingleOrDefault(u => u.Username == user.Username);
             var dbUserEmail = _db.Users.SingleOrDefault(u => u.Email == user.Email);
-            
+
             if (dbUserName != null || dbUserEmail != null || user.Password != model.ConfirmPassword)
             {
                 if (dbUserName != null)
                 {
                     ModelState.AddModelError("Username", "Username already exists");
                 }
+
                 if (dbUserEmail != null)
                 {
                     ModelState.AddModelError("Email", "Email already exists");
                 }
+
                 if (user.Password != model.ConfirmPassword)
                 {
                     ModelState.AddModelError("Password", "Passwords do not match");
                 }
+
                 return View("Register");
             }
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            
+
             _db.Users.Add(user);
             _db.SaveChanges();
 
@@ -85,7 +88,7 @@ namespace RecipeList.Accounts
             var toEmail = new MailAddress(user.Email);
             const string subject = "RecipeList Confirmation Email";
             var body = "Click the link below to confirm your email and gain access to the site!"
-                + "\n\nhttps://localhost:5001/account/verify/" + user.Id + "/" + emailVerification.GuId;
+                       + "\n\nhttps://localhost:5001/account/verify/" + user.Id + "/" + emailVerification.GuId;
 
             var clientDetails = new SmtpClient
             {
@@ -96,14 +99,14 @@ namespace RecipeList.Accounts
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
             };
-            
+
             using (var message = new MailMessage(fromAddress, toEmail)
             {
                 Subject = subject,
                 Body = body
             })
-            
-            clientDetails.Send(message);
+
+                clientDetails.Send(message);
 
             Console.WriteLine("Email Sent");
 
@@ -121,14 +124,25 @@ namespace RecipeList.Accounts
         public IActionResult Verify(int id, Guid guid)
         {
             var dbEmailVer = _db.EmailVerifications.FirstOrDefault(e => e.UserId == id);
-            if (guid == dbEmailVer.GuId)
+            var dbExpiredGuid = _db.ExpiredGuids.Any(e => e.ExpiredGuId == guid);
+            if (dbExpiredGuid)
             {
-                dbEmailVer.IsVerified = true;
-                _db.SaveChanges();
-                return View();
+                return View("ExpiredGuidView");
             }
-            return View("/");
-            
+
+            if (guid != dbEmailVer.GuId)
+            {
+                return View("/");
+            }
+
+            dbEmailVer.IsVerified = true;
+            var expiredGuid = new ExpiredGuid
+            {
+                ExpiredGuId = guid
+            };
+            _db.ExpiredGuids.Add(expiredGuid);
+            _db.SaveChanges();
+            return View();
         }
 
         [HttpGet]
@@ -151,7 +165,7 @@ namespace RecipeList.Accounts
                 ModelState.AddModelError("Username", "The specified user or password is incorrect.");
                 return View("Login");
             }
-            
+
             if (!BCrypt.Net.BCrypt.Verify(model.Password, dbUser.Password))
             {
                 ModelState.AddModelError("Password", "The specified user or password is incorrect.");
@@ -180,7 +194,7 @@ namespace RecipeList.Accounts
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         [HttpGet]
         public IActionResult Profile()

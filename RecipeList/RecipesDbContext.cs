@@ -14,5 +14,6 @@ namespace RecipeList
         public DbSet<ShoppingList> Lists { get; set; }
         public DbSet<EmailVerification> EmailVerifications { get; set; }
         public DbSet<ListItem> ListItems { get; set; }
+        public DbSet<ExpiredGuid> ExpiredGuids { get; set; }
     }
 }
