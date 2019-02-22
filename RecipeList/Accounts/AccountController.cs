@@ -15,10 +15,14 @@ namespace RecipeList.Accounts
     public class AccountController : Controller
     {
         private readonly RecipesDbContext _db;
+        private readonly PasswordHasher _passwordHasher;
+        private readonly EmailSender _emailSender;
         
-        public AccountController(RecipesDbContext db)
+        public AccountController(RecipesDbContext db, PasswordHasher passwordHasher, EmailSender emailSender)
         {
             _db = db;
+            _passwordHasher = passwordHasher;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -66,9 +70,8 @@ namespace RecipeList.Accounts
 
                 return View("Register");
             }
-
-            var passwordHasher = new PasswordHasher();
-            user.Password = passwordHasher.HashPassword(user.Password);
+            
+            user.Password = _passwordHasher.HashPassword(user.Password);
             
             _db.Users.Add(user);
             _db.SaveChanges();
@@ -83,8 +86,7 @@ namespace RecipeList.Accounts
             _db.EmailVerifications.Add(emailVerification);
             _db.SaveChanges();
 
-            var emailSender = new EmailSender();
-            emailSender.SendEmail(user, emailVerification);
+            _emailSender.SendEmail(user, emailVerification);
 
             return RedirectToAction("AwaitingVerification");
         }
@@ -142,8 +144,8 @@ namespace RecipeList.Accounts
                 return View("Login");
             }
 
-            var passwordHasher = new PasswordHasher();
-            if (!passwordHasher.VerifyPassword(model.Password, dbUser.Password))
+            
+            if (_passwordHasher.VerifyPassword(model.Password, dbUser.Password))
             {
                 ModelState.AddModelError("Password", "The specified user or password is incorrect.");
                 return View("Login");
