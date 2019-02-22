@@ -67,8 +67,9 @@ namespace RecipeList.Accounts
                 return View("Register");
             }
 
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-
+            var passwordHasher = new PasswordHasher();
+            user.Password = passwordHasher.HashPassword(user.Password);
+            
             _db.Users.Add(user);
             _db.SaveChanges();
 
@@ -166,7 +167,8 @@ namespace RecipeList.Accounts
                 return View("Login");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(model.Password, dbUser.Password))
+            var passwordHasher = new PasswordHasher();
+            if (!passwordHasher.VerifyPassword(model.Password, dbUser.Password))
             {
                 ModelState.AddModelError("Password", "The specified user or password is incorrect.");
                 return View("Login");
