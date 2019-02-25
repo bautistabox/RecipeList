@@ -147,9 +147,9 @@ namespace RecipeList.Shopping
         }
 
         [HttpPost]
-        public IActionResult Update(ShoppingListDataInput sldi)
+        public IActionResult Update(DataInput dataInput)
         {
-            var slim = JsonConvert.DeserializeObject<ShoppingListInputModel>(sldi.Data);
+            var slim = JsonConvert.DeserializeObject<ShoppingListInputModel>(dataInput.Data);
             Console.WriteLine(slim.ListId);
             for (var i = 0; i != slim.Items.Length; i++)
                 Console.WriteLine(slim.Items[i]);
@@ -201,7 +201,7 @@ namespace RecipeList.Shopping
         }
 
         [HttpPost]
-        public IActionResult Process(ShoppingListDataInput sldi)
+        public IActionResult Process(DataInput dataInput)
         {
             var uId = HttpContext.Session.GetInt32("_Userid");
             if (uId == -1)
@@ -209,7 +209,7 @@ namespace RecipeList.Shopping
                 return RedirectToAction("Login", "Account");
             }
 
-            var slim = JsonConvert.DeserializeObject<ShoppingListInputModel>(sldi.Data);
+            var slim = JsonConvert.DeserializeObject<ShoppingListInputModel>(dataInput.Data);
 
             var shoppingList = new ShoppingList
             {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeList.Accounts;
 using RecipeList.Ingredient;
+using RecipeList.Recipes;
 using RecipeList.Shopping;
 
 namespace RecipeList
@@ -15,5 +16,6 @@ namespace RecipeList
         public DbSet<EmailVerification> EmailVerifications { get; set; }
         public DbSet<ListItem> ListItems { get; set; }
         public DbSet<ExpiredGuid> ExpiredGuids { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

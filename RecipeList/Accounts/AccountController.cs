@@ -164,6 +164,13 @@ namespace RecipeList.Accounts
             HttpContext.Session.SetInt32("_Userid", dbUser.Id);
             HttpContext.Session.SetString("_Username", dbUser.Username);
 
+
+            if (dbUser.Username == "Admin")
+            {
+                return RedirectToAction("Home", "Admin");
+            }
+
+
             return RedirectToAction("Profile");
         }
 
