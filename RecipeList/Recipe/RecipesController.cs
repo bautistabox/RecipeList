@@ -75,6 +75,74 @@ namespace RecipeList.Recipes
             return View();
         }
 
+        [HttpGet]
+        [Route("recipes/edit/{recipeId}")]
+        public IActionResult Edit(int recipeId)
+        {
+            var dbIngredients = _db.Ingredients.ToList();
+            ViewData["ingredients"] = dbIngredients;
+            
+            
+            var recipeInfo = new RecipeInfo();
+            recipeInfo.Categories = _db.Categories.OrderBy(s => s.Name).ToList();
+            recipeInfo.RecipeIngredients = new List<RecipeIngredients>();
+            recipeInfo.Ingredients = new List<Ingredient.Ingredient>();
+            recipeInfo.Category = new Category();
+            recipeInfo.IngredientsList = new List<string>();
+            recipeInfo.Recipe = _db.Recipes.FirstOrDefault(r => r.Id == recipeId);
+            
+            var recipeIngredients = _db.RecipeIngredients
+                .Where(r => r.RecipeId == recipeId)
+                .Select(i => new {i.IngredientId, i.Amount, i.AmountType})
+                .ToArray();
+            List<int> ingIds = new List<int>();
+
+            for (var i = 0; i < recipeIngredients.Length; i++)
+            {
+                recipeInfo.RecipeIngredients.Add(
+                    new RecipeIngredients
+                    {
+                        IngredientId = recipeIngredients[i].IngredientId,
+                        Amount = recipeIngredients[i].Amount,
+                        AmountType = recipeIngredients[i].AmountType
+                    });
+                ingIds.Add(recipeIngredients[i].IngredientId);
+            }
+
+            recipeInfo.Category = _db.Categories.SingleOrDefault(c => c.Id == recipeInfo.Recipe.CategoryId);
+
+            var ingredients = _db.Ingredients
+                .Where(i => ingIds.Contains(i.Id));
+
+            foreach (var ingredient in ingredients)
+            {
+                recipeInfo.Ingredients.Add(
+                    new Ingredient.Ingredient
+                    {
+                        Id = ingredient.Id,
+                        Name = ingredient.Name
+                    });
+            }
+
+            for (var i = 0; i < recipeInfo.Ingredients.Count; i++)
+            {
+                string fullIngredient = "";
+                if (recipeInfo.RecipeIngredients[i].Amount != "N/A")
+                {
+                    fullIngredient = recipeInfo.RecipeIngredients[i].Amount + " ";
+                    if (recipeInfo.RecipeIngredients[i].AmountType != "N/A")
+                    {
+                        fullIngredient = fullIngredient + recipeInfo.RecipeIngredients[i].AmountType + " of ";
+                    }
+                }
+
+                fullIngredient = fullIngredient + recipeInfo.Ingredients[i].Name;
+                recipeInfo.IngredientsList.Add(fullIngredient);
+            }
+            
+            return View(recipeInfo);
+        }
+
         [HttpPost]
         public IActionResult Process(RecipeInputModel model)
         {
@@ -149,6 +217,11 @@ namespace RecipeList.Recipes
             recipeInfo.Category = new Category();
             recipeInfo.IngredientsList = new List<string>();
             recipeInfo.Recipe = _db.Recipes.FirstOrDefault(r => r.Id == recipeId);
+
+            if (recipeInfo.Recipe.Photo != null)
+            {
+                recipeInfo.Image = Convert.ToBase64String(recipeInfo.Recipe.Photo);
+            }
 
             var recipeIngredients = _db.RecipeIngredients
                 .Where(r => r.RecipeId == recipeId)

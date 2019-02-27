@@ -23,7 +23,7 @@
         <div>
             @* <div class="row"> *@
             @*     <div class="col-md-6"> *@
-            @foreach(var recipe in @Model)
+            @foreach (var recipe in @Model)
             {
                 <div class="card" style="width: 18rem; background: #f0ead6">
                     @if (@recipe.RecipePhoto != null)
@@ -33,9 +33,13 @@
                     <div class="card-body">
                         <h5 class="card-title">@recipe.RecipeName</h5>
                         <p class="card-text">@recipe.RecipeDescShort</p>
-                        <a href="recipes/page/@recipe.RecipeId" class="btn btn-info">View</a>
+                        <div class="btn-group">
+                            <a href="recipes/page/@recipe.RecipeId" class="btn btn-info">View</a>
+                            <a href="recipes/edit/@recipe.RecipeId" class="btn btn-info">Edit</a>
+                        </div>
                     </div>
-                </div><br/>
+                </div>
+                <br/>
             }
             @* </div> *@
             @* <div class="col-md-6"> *@
