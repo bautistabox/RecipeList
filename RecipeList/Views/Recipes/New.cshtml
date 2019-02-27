@@ -1,0 +1,206 @@
+@using RecipeList.Ingredient
+@using RecipeList.Recipes
+@model RecipeInputModel
+@{
+    var ingredients = (List<Ingredient>) ViewData["ingredients"];
+    var categories = (List<Category>) ViewData["categories"];
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>New Recipe</title>
+</head>
+<body>
+<div align="center">
+    <h2 class="display-4" style="color: #f0ead6">New Recipe</h2><br/>
+    <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
+    <br/>
+    <div style="width: 75%" align="left">
+        <br/>
+        <form id="recipe-form" action="/recipes/process" method="post" enctype="multipart/form-data">
+            <div style="padding: 15px; background: #f0ead6">
+
+                @* Name your Recipe *@
+                <div class="form-group">
+                    <label asp-for="Name" style="color: #1560bd"></label>
+                    <input type="text" id="name" name="Name" class="form-control"/>
+                </div>
+
+                @* Choose a Category *@
+                <div class="form-group">
+                    <label asp-for="Category" style="color: #1560bd"></label>
+                    <select style="width: 100%" name="Category" id="category">
+                        @foreach (var category in categories)
+                        {
+                            <option>@category.Name</option>
+                        }
+                    </select>
+                </div>
+
+                @* Fill in a Description *@
+                <div class="form-group">
+                    <label asp-for="Description" style="color: #1560bd"></label>
+                    <textarea rows="3" style="width: 100%" class="form-control" id="description" name="Description"></textarea>
+                </div>
+
+                @* Enter your Instructions *@
+                <div class="form-group">
+                    <label asp-for="Instruction" style="color: #1560bd"></label>
+                    <textarea rows="10" style="width: 100%; padding: 15px" id="instruction" name="Instruction" class="form-control" 
+                    placeholder="1. First instruction &#10;2. Second Instruction &#10;3. Third Instruction &#10;..."></textarea>
+                </div>
+
+                @* Enter Ingredients and Amounts *@
+                <div class="form-group" align="center" id="ingredientDiv">
+
+                    @* Ingredient Input *@
+                    <label for="ingredientInput">Ingredient:</label>
+                    <input list="ingredients" id="ingredientInput" placeholder="Ingredient"/>
+                    <datalist id="ingredients">
+                        @foreach (var ing in ingredients)
+                        {
+                            <option value="@ing.Name"/>
+                        }
+                    </datalist>
+
+                    @* Amount *@
+                    <label for="amount">Amount:</label>
+                    <input type="text" id="amount" style="width: 3em"/>
+
+
+                    @* Amount Type *@
+                    <label for="amountType">Unit:</label>
+                    <select id="amountType">
+                        <option></option>
+                        <option>cup(s)</option>
+                        <option>lb(s)</option>
+                        <option>oz</option>
+                        <option>tbsp.</option>
+                        <option>tsp.</option>
+                    </select>
+
+                    <input type="button" class="btn btn-info" id="add-row" value="Add Ingredient"/>
+                    <br/>
+                    <small for="ingredientDiv"
+                           class="text-body text-muted">
+                        Amounts or Units left blank will be ignored.
+                    </small>
+                </div>
+
+                @* Table to display Ingredients *@
+                <div align="center">
+                    <div style="width: 60%">
+                        <table class="table table-bordered table-light" id="myTable">
+                            <thead>
+                            <tr>
+                                <th scope="col">Ingredient</th>
+                                <th scope="col" style="width: 10%">Amount</th>
+                                <th scope="col" style="width: 10%">Unit</th>
+                                <th scope="col" style="width: 5%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+
+                @* File Upload: Image *@
+                <div class="form-group" align="center">
+                    <label asp-for="Photo" style="color: #1560bd"></label>
+                    <br/>
+                    <input style="color: #1560bd" id="picture" name="Photo" type="file"/>
+                </div>
+            </div>
+        </form>
+
+        @* Button to Submit Form *@
+        <div align="center" style="background: #f0ead6; padding-bottom: 15px">
+            <button id="add-recipe" class="btn btn-info">Add Recipe</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+@* View Logic *@
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+    var ingredientList = [];
+    $(document).ready(function() {
+        @* Button to add ingredient to table *@
+        $("#add-row").click(function() {
+            var name = $("#ingredientInput").val();
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+            var amount = $("#amount").val();
+            var amountType = $("#amountType").val();
+
+            @* Fill blank values with 'N/A' *@
+            if (amount === "" || amountType === "") {
+                if (amount === "") {
+                    amount = "N/A";
+                    amountType = "N/A";
+                } else if (amountType === "") {
+                    amountType = "N/A";
+                }
+            }
+
+            var ingredientMarkUp =
+                "<tr><td>" + name + "</td>";
+            var amountMarkUp = "<td>" + amount + "</td>";
+            var unitMarkUp = "<td>" + amountType + "</td>";
+            var closeMarkUp = "<td><button type='button' class='close' " +
+                "aria-label='Close'><span aria-hidden='true'>&times;</span></button></td></tr>";
+            @* HTML to be added to Ingredient Table *@
+            var markup = ingredientMarkUp + amountMarkUp + unitMarkUp + closeMarkUp;
+
+            @* Reset input boxes and Append to Table *@
+            $("#ingredientInput").val("");
+            $("#amount").val("");
+            $("#amountType").val("");
+            $("table tbody").append(markup);
+        });
+        @* X button to remove row from Ingredient Table *@
+        $('#myTable').on('click',
+            'button[type="button"]',
+            function() {
+                $(this).closest('tr').remove();
+            });
+        @* Button to Submit Form *@
+        $("#add-recipe").click(function() {
+            var tbl = document.getElementById("myTable");
+
+            var tblIngredients = new Array();
+            var tblAmounts = new Array();
+            var tblAmountTypes = new Array();
+
+            var dataList = new Array();
+
+            @* Getting Values from Rows in Ingredient Table *@
+            for (var i = 1; i < tbl.rows.length; i++) {
+                var ingredientName = tbl.rows[i].cells[0].innerHTML;
+                var ingredientAmount = tbl.rows[i].cells[1].innerHTML;
+                var ingredientAmountType = tbl.rows[i].cells[2].innerHTML;
+
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: "Ingredients[" + (i - 1) + "].Ingredient",
+                    value: ingredientName
+                }).appendTo('#recipe-form');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: "Ingredients[" + (i - 1) + "].Amount",
+                    value: ingredientAmount
+                }).appendTo('#recipe-form');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: "Ingredients[" + (i - 1) + "].AmountType",
+                    value: ingredientAmountType
+                }).appendTo('#recipe-form');
+            }
+            $('#recipe-form').submit();
+        });
+    });
+</script>

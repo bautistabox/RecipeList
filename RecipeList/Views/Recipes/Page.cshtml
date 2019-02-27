@@ -1,0 +1,52 @@
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model RecipeList.Recipe.RecipeInfo
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<body>
+<div class="card">
+    <div align="center" class="card-header">
+        <h1 class="display-4">@Model.Recipe.Name</h1>
+        @Model.Category.Name
+    </div>
+    
+    <div class="card-body" align="center" style="background: #f0ead6">
+        
+        <div class="card" style="width: 75%">
+            <div class="card-header">
+                <p class="text-left font-weight-bold">Recipe Description</p>
+            </div>
+            <div class="card-body">
+                <p class="text-left">@Model.Recipe.Description</p>
+            </div>
+        </div>
+        
+        <div class="card" style="width: 75%">
+            <div class="card-header">
+                <p class="text-left font-weight-bold">Cooking Instructions</p>
+            </div>
+            <div class="card-body" style="white-space: pre-line">
+                <p class="text-left">@Model.Recipe.Instruction</p>
+            </div>
+        </div>
+        
+        <div align="center">
+            <div class="card" style="width: 50%">
+                <div class="card-header">
+                    <p class="text-left font-weight-bold">Ingredients</p>
+                </div>
+                <div class="card-body text-left">
+                        @foreach(var ingredient in @Model.IngredientsList)
+                        {
+                            <ul>
+                                <li>@ingredient</li>
+                            </ul>
+                        }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>

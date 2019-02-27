@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeList.Accounts;
 using RecipeList.Ingredient;
+using RecipeList.Recipe;
 using RecipeList.Recipes;
 using RecipeList.Shopping;
 
@@ -17,5 +18,15 @@ namespace RecipeList
         public DbSet<ListItem> ListItems { get; set; }
         public DbSet<ExpiredGuid> ExpiredGuids { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Recipes.Recipe> Recipes { get; set; }
+        public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RecipeIngredients>()
+                .HasKey(r => new {r.IngredientId, r.RecipeId});
+        }
     }
+    
+    
 }

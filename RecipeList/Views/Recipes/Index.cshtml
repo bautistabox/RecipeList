@@ -1,0 +1,50 @@
+@model List<RecipeList.Recipe.RecipeItems>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Recipes</title>
+</head>
+<body>
+<div>
+    <div style="float: right">
+        <a class="btn btn-info" style="color: #fff" href="recipes/new">Create a new recipe!</a>
+    </div>
+    <div style="float: left">
+        <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
+    </div>
+    <div align="center">
+        <h5 class="display-4" style="color: white">Your Recipes</h5>
+    </div>
+    <br/><br/>
+
+    <div align="center">
+        <div>
+            @* <div class="row"> *@
+            @*     <div class="col-md-6"> *@
+            @foreach(var recipe in @Model)
+            {
+                <div class="card" style="width: 18rem; background: #f0ead6">
+                    @if (@recipe.RecipePhoto != null)
+                    {
+                        <img class="card-img-top" src="data:image/png;base64, @recipe.RecipePhoto64" alt="Image Found">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@recipe.RecipeName</h5>
+                        <p class="card-text">@recipe.RecipeDescShort</p>
+                        <a href="recipes/page/@recipe.RecipeId" class="btn btn-info">View</a>
+                    </div>
+                </div><br/>
+            }
+            @* </div> *@
+            @* <div class="col-md-6"> *@
+            @* <h1>two</h1> *@
+            @*     </div> *@
+            @* </div> *@
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
