@@ -30,8 +30,10 @@
                             name +
                             "'>" +
                             name +
-                            "</td><td><button type='button' class='close' " +
-                            "aria-label='Close'><span aria-hidden='true'>&times;</span></button></td></tr>";
+                            "</td></tr>";
+//                        <td><button type='button' class='close' " +
+//                            "aria-label='Close'><span aria-hidden='true'>&times;</span></button></td></tr>";
+                        
                         $("#newCategoryID").val("");
                         $("table tbody").append(markup);
                     });
@@ -55,11 +57,11 @@
             </script>
 
             @* Dynamic Table *@
-            <table class="table table-striped table-info table-hover" id="categoryTable">
+            <table class="table table-striped table-light table-hover" id="categoryTable">
                 <thead>
                 <tr>
-                    <th scope="col" style="width: 90%">Categories</th>
-                    <th scope="col" style="width: 10%"></th>
+                    <th scope="col" style="width: 100%">Categories</th>
+                    @* <th scope="col" style="width: 10%"></th> *@
                 </tr>
                 </thead>
                 <tbody>
@@ -67,11 +69,11 @@
                  {
                      <tr>
                          <td class="categoryItem" + @cat.Name>@cat.Name</td>
-                         <td>
-                             <button type="button" class="close" aria-label="Close">
-                                 <span aria-hidden='true'>&times;</span>
-                             </button>
-                         </td>
+                         @* <td> *@
+                         @*     <button type="button" class="close" aria-label="Close"> *@
+                         @*         <span aria-hidden='true'>&times;</span> *@
+                         @*     </button> *@
+                         @* </td> *@
                      </tr>
                  }
                 </tbody>

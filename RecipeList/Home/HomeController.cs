@@ -16,7 +16,7 @@ namespace RecipeList.Home
                 return View();
             }
 
-            return RedirectToAction("Profile", "Account");
+            return RedirectToAction("profile", "account");
         }
 
         public IActionResult Privacy()

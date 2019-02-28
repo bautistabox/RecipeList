@@ -136,7 +136,7 @@ namespace RecipeList.Accounts
             {
                 return View("Login");
             }
-
+            
             var dbUser = _db.Users.FirstOrDefault(u => u.Username == model.Username);
             if (dbUser == null)
             {
@@ -165,12 +165,10 @@ namespace RecipeList.Accounts
             HttpContext.Session.SetString("_Username", dbUser.Username);
 
 
-            if (dbUser.Username == "Admin")
+            if (dbUser.Username.Equals("admin"))
             {
                 return RedirectToAction("Home", "Admin");
             }
-
-
             return RedirectToAction("Profile");
         }
 
