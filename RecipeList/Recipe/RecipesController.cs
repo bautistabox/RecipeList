@@ -274,6 +274,27 @@ namespace RecipeList.Recipes
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Delete(DeleteItem model)
+        {
+            var deleteIngredients =
+                from recipeIngredients in _db.RecipeIngredients
+                where recipeIngredients.RecipeId == model.DeleteRecipeId
+                select recipeIngredients;
+            foreach (var ingredient in deleteIngredients)
+            {
+                _db.RecipeIngredients.Remove(ingredient);
+            }
+
+            _db.SaveChanges();
+
+            var deleteRecipe = _db.Recipes.FirstOrDefault(d => d.Id == model.DeleteRecipeId);
+            _db.Recipes.Remove(deleteRecipe);
+
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
         [HttpGet]
         [Route("recipes/page/{recipeId}")]
         public IActionResult Page(int recipeId)
@@ -284,6 +305,7 @@ namespace RecipeList.Recipes
             recipeInfo.Category = new Category();
             recipeInfo.IngredientsList = new List<string>();
             recipeInfo.Recipe = _db.Recipes.FirstOrDefault(r => r.Id == recipeId);
+            recipeInfo.CurrentUser = HttpContext.Session.GetInt32("_Userid").Value;
 
             if (recipeInfo.Recipe.Photo != null)
             {

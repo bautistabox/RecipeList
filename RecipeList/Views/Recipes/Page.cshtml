@@ -54,6 +54,12 @@
                         </div>
                     </div>
                 </div>
+                
+                @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
+                {
+                    <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit</a>                  
+                }
+                
             </div>
         </div>
     </div>

@@ -25,7 +25,7 @@
                     <label for="name" style="color: #1560bd">Recipe Title</label>
                     <input type="text" id="name" name="Name" value="@Model.Recipe.Name" class="form-control"/>
                 </div>
-                
+
                 <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
 
                 @* Choose a Category *@
@@ -130,15 +130,47 @@
                     <br/>
                     <small for="picture"
                            class="text-body text-muted">
-                        Don't upload photo, to keep current photo. @Model.Recipe.Photo
+                        Don't upload photo, to keep current photo.
                     </small>
                 </div>
             </div>
         </form>
 
+        <form id="deleteForm" action="/recipes/delete" method="POST">
+            <input type="hidden" name="DeleteRecipeId" value="@Model.Recipe.Id"/>
+        </form>
+        
         @* Button to Submit Form *@
         <div align="center" style="background: #f0ead6; padding-bottom: 15px">
-            <button id="add-recipe" class="btn btn-info">Save Recipe</button>
+            <div class="btn btn-group">
+                <button id="add-recipe" class="btn btn-info">Save</button>
+                <button class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete">
+                    Delete
+                </button>
+            </div>
+        </div>
+        <script>
+            $('#confirm-delete').on('show.bs.modal',
+                function(e) {
+                    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+                });
+        </script>
+
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="display-4" style="color: red">Confirm Deletion</h6>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete the recipe titled: <b style="color: red">@Model.Recipe.Name</b>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">No, Take me back</button>
+                        <button type="button" class="btn btn-danger" id="delete-list">Yes, Delete</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -150,6 +182,10 @@
 <script type="text/javascript">
     var ingredientList = [];
     $(document).ready(function() {
+        @* Form to delete recipe *@
+        $("#delete-list").click(function() {
+            $('#deleteForm').submit();
+        });
         @* Button to add ingredient to table *@
         $("#add-row").click(function() {
             var name = $("#ingredientInput").val();

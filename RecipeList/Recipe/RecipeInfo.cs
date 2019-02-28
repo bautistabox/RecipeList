@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using RecipeList.Recipes;
@@ -12,6 +13,8 @@ namespace RecipeList.Recipe
         public Category Category { get; set; }
         public List<Category> Categories { get; set; }
         public List<string> IngredientsList { get; set; }
+        
+        public Int32 CurrentUser { get; set; }
         
         public string Image { get; set; }
         }
