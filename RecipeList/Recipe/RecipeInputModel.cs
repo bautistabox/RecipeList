@@ -8,6 +8,8 @@ namespace RecipeList.Recipes
 {
     public class RecipeInputModel
     {
+        public int RecipeId { get; set; }
+        
         [Required]
         [Display(Name = "Recipe Title")]
         public string Name { get; set; }

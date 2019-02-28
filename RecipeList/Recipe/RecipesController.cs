@@ -81,8 +81,8 @@ namespace RecipeList.Recipes
         {
             var dbIngredients = _db.Ingredients.ToList();
             ViewData["ingredients"] = dbIngredients;
-            
-            
+
+
             var recipeInfo = new RecipeInfo();
             recipeInfo.Categories = _db.Categories.OrderBy(s => s.Name).ToList();
             recipeInfo.RecipeIngredients = new List<RecipeIngredients>();
@@ -90,7 +90,7 @@ namespace RecipeList.Recipes
             recipeInfo.Category = new Category();
             recipeInfo.IngredientsList = new List<string>();
             recipeInfo.Recipe = _db.Recipes.FirstOrDefault(r => r.Id == recipeId);
-            
+
             var recipeIngredients = _db.RecipeIngredients
                 .Where(r => r.RecipeId == recipeId)
                 .Select(i => new {i.IngredientId, i.Amount, i.AmountType})
@@ -139,8 +139,76 @@ namespace RecipeList.Recipes
                 fullIngredient = fullIngredient + recipeInfo.Ingredients[i].Name;
                 recipeInfo.IngredientsList.Add(fullIngredient);
             }
-            
+
             return View(recipeInfo);
+        }
+
+        [HttpPost]
+        public IActionResult Update(RecipeInputModel model)
+        {
+            var dbRecipe = _db.Recipes.SingleOrDefault(r => r.Id == model.RecipeId);
+            dbRecipe.Name = model.Name;
+            dbRecipe.Description = model.Description;
+            dbRecipe.Instruction = model.Instruction;
+            dbRecipe.UpdatedAt = DateTime.Now;
+            if (model.Photo != null)
+            {
+                var stream = new MemoryStream();
+                if (model.Photo.Length > 0)
+                {
+                    using (stream)
+                    {
+                        model.Photo.CopyTo(stream);
+                    }
+
+                    dbRecipe.Photo = stream.ToArray();
+                }
+            }
+
+            _db.SaveChanges();
+
+            var deleteIngredients =
+                from recipeIngredients in _db.RecipeIngredients
+                where recipeIngredients.RecipeId == model.RecipeId
+                select recipeIngredients;
+            foreach (var ingredient in deleteIngredients)
+            {
+                _db.RecipeIngredients.Remove(ingredient);
+            }
+
+            _db.SaveChanges();
+            
+            foreach (var ingredientItem in model.Ingredients)
+            {
+                var ingredient = new Ingredient.Ingredient();
+                var dbIngredient = _db.Ingredients.SingleOrDefault(i => i.Name == ingredientItem.Ingredient);
+                if (dbIngredient == null)
+                {
+                    ingredient = new Ingredient.Ingredient
+                    {
+                        Name = ingredientItem.Ingredient,
+                        CreatedAt = DateTime.Now
+                    };
+                    _db.Ingredients.Add(ingredient);
+                    _db.SaveChanges();
+                }
+                else
+                {
+                    ingredient = dbIngredient;
+                }
+                
+                var recipeIngredient = new RecipeIngredients
+                {
+                    IngredientId = ingredient.Id,
+                    RecipeId = dbRecipe.Id,
+                    Amount = ingredientItem.Amount,
+                    AmountType = ingredientItem.AmountType
+                };
+                _db.RecipeIngredients.Add(recipeIngredient);
+                _db.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -151,7 +219,6 @@ namespace RecipeList.Recipes
 
             var catId = _db.Categories.First(u => u.Name == model.Category).Id;
             var size = model.Photo.Length;
-            var filePath = Path.GetTempFileName();
             var stream = new MemoryStream();
             if (size > 0)
             {

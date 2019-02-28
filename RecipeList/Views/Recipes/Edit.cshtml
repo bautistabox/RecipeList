@@ -17,7 +17,7 @@
     <br/>
     <div style="width: 75%" align="left">
         <br/>
-        <form id="recipe-form" action="/recipes/process" method="post" enctype="multipart/form-data">
+        <form id="recipe-form" action="/recipes/update" method="post" enctype="multipart/form-data">
             <div style="padding: 15px; background: #f0ead6">
 
                 @* Name your Recipe *@
@@ -25,16 +25,17 @@
                     <label for="name" style="color: #1560bd">Recipe Title</label>
                     <input type="text" id="name" name="Name" value="@Model.Recipe.Name" class="form-control"/>
                 </div>
+                
+                <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
 
                 @* Choose a Category *@
                 <div class="form-group">
                     <label for="category" style="color: #1560bd">Category of Recipe</label>
-                      @*  @Html.DropDownListFor(m => m.Categories, new SelectList(Model.Categories, "Id", "Name"), "Select Category") *@
                     <select style="width: 100%" name="Category" id="category">
                         @foreach (var category in Model.Categories)
                         {
                             var isDefault = category.Id == Model.Category.Id;
-                            <option selected=@isDefault >@category.Name</option>
+                            <option selected=@isDefault>@category.Name</option>
                         }
                     </select>
                 </div>
@@ -102,12 +103,17 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @for(var i = 0; i < @Model.RecipeIngredients.Count; i++)
+                            @for (var i = 0; i < @Model.RecipeIngredients.Count; i++)
                             {
                                 <tr>
                                     <td>@Model.Ingredients[i].Name</td>
                                     <td>@Model.RecipeIngredients[i].Amount</td>
                                     <td>@Model.RecipeIngredients[i].AmountType</td>
+                                    <td>
+                                        <button type="button" class="close" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </td>
                                 </tr>
                             }
                             </tbody>
@@ -121,13 +127,18 @@
                     <label for="picture" style="color: #1560bd">Optional - Post a photo of your dish</label>
                     <br/>
                     <input style="color: #1560bd" id="picture" name="Photo" type="file"/>
+                    <br/>
+                    <small for="picture"
+                           class="text-body text-muted">
+                        Don't upload photo, to keep current photo. @Model.Recipe.Photo
+                    </small>
                 </div>
             </div>
         </form>
 
         @* Button to Submit Form *@
         <div align="center" style="background: #f0ead6; padding-bottom: 15px">
-            <button id="add-recipe" class="btn btn-info">Add Recipe</button>
+            <button id="add-recipe" class="btn btn-info">Save Recipe</button>
         </div>
     </div>
 </div>
