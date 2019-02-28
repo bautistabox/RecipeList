@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RecipeList.Authentication;
+using RecipeList.Ingredient;
 
 namespace RecipeList.Shopping
 {
@@ -73,6 +75,49 @@ namespace RecipeList.Shopping
             ViewData["items"] = dupeList;
             ViewData["username"] = sessionUName;
             return View();
+        }
+
+        [HttpPost]
+        [Route("shopping/create-list")]
+        public IActionResult Create(IngredientListInputModel model)
+        {
+
+            var dbRecipe = _db.Recipes.FirstOrDefault(r => r.Id == model.RecipeId);
+            
+            var shoppingList = new ShoppingList
+            {
+                Name = dbRecipe.Name,
+                UserId = HttpContext.Session.GetInt32("_Userid").Value,
+                CreatedAt = DateTime.Now
+            };
+
+            _db.Lists.Add(shoppingList);
+            _db.SaveChanges();
+
+            var recipeIngredientIds = _db.RecipeIngredients
+                .Where(r => r.RecipeId == model.RecipeId)
+                .Select(i => i.IngredientId)
+                .ToArray();
+                
+            
+            foreach(var recipeIngredientId in recipeIngredientIds)
+            {
+                var ingredient = _db.Ingredients
+                    .Where(i => i.Id == recipeIngredientId)
+                    .Select(i => i.Name)
+                    .Single();
+
+                var listItem = new ListItem
+                {
+                    ListId = shoppingList.Id,
+                    ItemName = ingredient
+                };
+
+                _db.ListItems.Add(listItem);
+            }
+            
+            _db.SaveChanges();
+            return RedirectToAction("View", new {listId = shoppingList.Id});
         }
 
         [HttpGet]

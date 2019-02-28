@@ -28,6 +28,12 @@
                                     </ul>
                                 }
                             </div>
+                            <div class="card-footer">
+                                <form action="/shopping/create-list" method="post">
+                                    <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
+                                    <input type="submit" class="btn btn-info" value="Add items to shopping list"/>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm">
@@ -54,12 +60,12 @@
                         </div>
                     </div>
                 </div>
-                
+
                 @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
                 {
-                    <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit</a>                  
+                    <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit</a>
                 }
-                
+
             </div>
         </div>
     </div>
