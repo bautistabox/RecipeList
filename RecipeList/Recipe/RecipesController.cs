@@ -52,9 +52,9 @@ namespace RecipeList.Recipes
                     mod.RecipePhoto64 = Convert.ToBase64String(mod.RecipePhoto);
                 }
 
-                if (mod.RecipeDescription.Length > 80)
+                if (mod.RecipeDescription.Length > 68)
                 {
-                    mod.RecipeDescShort = mod.RecipeDescription.Substring(0, 80) + "...";
+                    mod.RecipeDescShort = mod.RecipeDescription.Substring(0, 68) + "...";
                 }
                 else
                 {
