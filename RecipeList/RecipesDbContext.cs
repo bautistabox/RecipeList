@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeList.Accounts;
-using RecipeList.Ingredient;
 using RecipeList.Recipe;
 using RecipeList.Recipes;
 using RecipeList.Shopping;
