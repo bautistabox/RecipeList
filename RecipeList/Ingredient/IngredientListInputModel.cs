@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RecipeList.Ingredient
 {
     public class IngredientListInputModel

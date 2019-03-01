@@ -1,14 +1,8 @@
 using System;
 using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RecipeList.Authentication;
-using System.Net.Mail;
-using System.Reflection.Metadata;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Mvc.Filters;
-
 
 namespace RecipeList.Accounts
 {

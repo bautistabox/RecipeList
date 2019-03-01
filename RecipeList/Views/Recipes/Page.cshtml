@@ -10,6 +10,10 @@
     <div align="center" class="card-header" style="background: #f0ead6">
         <h1 class="display-4">@Model.Recipe.Name</h1>
         @Model.Category.Name
+        @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
+        {
+            <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info" style="float:right">Edit</a>
+        }
     </div>
     <div class="card-body" align="center">
         <div style="width: 75%">
@@ -60,12 +64,6 @@
                         </div>
                     </div>
                 </div>
-
-                @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
-                {
-                    <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit</a>
-                }
-
             </div>
         </div>
     </div>

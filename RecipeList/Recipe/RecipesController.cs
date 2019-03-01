@@ -3,16 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Newtonsoft.Json;
-using RecipeList.Accounts;
 using RecipeList.Authentication;
-using RecipeList.Ingredient;
-using RecipeList.Recipe;
-
-namespace RecipeList.Recipes
+namespace RecipeList.Recipe
 {
     [Authorize]
     public class RecipesController : Controller
@@ -25,17 +18,78 @@ namespace RecipeList.Recipes
         }
 
         [HttpGet]
+        public IActionResult Search(RecipeSearchInputModel model)
+        {
+            var dbRecipes = _db.Recipes.ToList();
+
+            Console.WriteLine(model.SearchQuery);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        [Route("recipes/search/category/{categoryId}")]
+        public IActionResult SearchCategories(int categoryId)
+        {
+            if (categoryId == 0)
+            {
+                return View("Index");
+            }
+            
+            var dbRecipes = _db.Recipes.Where(r => r.CategoryId == categoryId);
+
+            var recipeItems = new List<RecipeItems>();
+            foreach (var recipe in dbRecipes)
+            {
+                var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
+                
+                var recipeItem = new RecipeItems
+                {
+                    RecipeId = recipe.Id,
+                    RecipeOwner = recipeOwner.DisplayName,
+                    RecipeOwnderId = recipe.UploaderId,
+                    RecipeName = recipe.Name,
+                    RecipeDescription = recipe.Description,
+                    RecipeInstruction = recipe.Instruction,
+                    RecipePhoto = recipe.Photo,
+                    RecipeCreatedDate = recipe.CreatedAt,
+                    RecipeUpdatedDate = recipe.UpdatedAt
+                };
+
+                if (recipeItem.RecipePhoto != null)
+                {
+                    recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
+                }
+                if (recipeItem.RecipeDescription.Length > 68)
+                {
+                    recipeItem.RecipeDescShort = recipeItem.RecipeDescription.Substring(0, 68) + "...";
+                }
+                else
+                {
+                    recipeItem.RecipeDescShort = recipeItem.RecipeDescription;
+                }
+                
+                recipeItems.Add(recipeItem);
+            }
+            
+            var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
+            var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
+            ViewData["categories"] = dbCategories;
+            ViewData["allCategories"] = allDbCategories;
+
+            return View("Index", recipeItems);
+        }
+
+        [HttpGet]
         public IActionResult Index()
         {
             var sessionUId = HttpContext.Session.GetInt32("_Userid");
-            var sessionUName = HttpContext.Session.GetString("_Username");
+            var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
 
             var model = _db.Recipes
-                .Where(u => u.UploaderId == sessionUId)
                 .Select(u => new RecipeItems
                 {
                     RecipeId = u.Id,
-                    RecipeOwner = sessionUName,
+                    RecipeOwner = user.DisplayName,
                     RecipeOwnderId = sessionUId.Value,
                     RecipeName = u.Name,
                     RecipeDescription = u.Description,
@@ -61,7 +115,12 @@ namespace RecipeList.Recipes
                     mod.RecipeDescShort = mod.RecipeDescription;
                 }
             }
-
+            
+            var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
+            var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
+            ViewData["categories"] = dbCategories;
+            ViewData["allCategories"] = allDbCategories;
+            
             return View(model);
         }
 

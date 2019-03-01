@@ -1,5 +1,3 @@
-using System;
-
 namespace RecipeList.Home
 {
     public class ErrorViewModel

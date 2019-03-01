@@ -1,4 +1,10 @@
+@using System.Diagnostics.Tracing
+@using RecipeList.Recipes
 @model List<RecipeList.Recipe.RecipeItems>
+@{
+    var categories = (List<Category>) ViewData["categories"];
+    var allCategories = (List<Category>) ViewData["allCategories"];
+}
 
 <!DOCTYPE html>
 
@@ -9,20 +15,54 @@
 <body>
 <div>
     <div style="float: right">
-        <a class="btn btn-info" style="color: #fff" href="recipes/new">Create a new recipe!</a>
+        <a class="btn btn-info" style="color: #fff;" href="recipes/new">Create a new recipe!</a>
     </div>
     <div style="float: left">
         <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
     </div>
+    <br/><br/><br/>
     <div align="center">
-        <h5 class="display-4" style="color: white">Your Recipes</h5>
+        <div class="card" style="display: inline-block; background: #f0ead6;">
+            <div class="card-header">
+                <span style="font-style: oblique; font-weight: 100; font-stretch: ultra-expanded; font-size: 2em">Find a Recipe</span>
+            </div>
+            <div class="card-body">
+                @for (var i = 0; i < categories.Count; i++)
+                {
+                    if (i != 0)
+                    {
+                        @Html.Raw(" | ")
+                    }
+                    <a href="/recipes/search/category/@categories[i].Id">@categories[i].Name</a>
+                }
+                <br/><br/>
+                <select onchange="location = this.value;" class="form-control" style="width: 20%">
+                    <option value="/recipes/search/category/0">All Categories</option>
+                    @foreach (var category in allCategories)
+                    {
+                        <option value="/recipes/search/category/@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="card-footer">
+                <form action="/recipes/search" method="get">
+                    <input type="text" name="SearchQuery" id="search_field" class="shadow-lg"/>
+                    <input type="submit" value="Go" class="btn-info shadow-lg"/>
+                </form>
+            </div>
+        </div>
     </div>
     <br/><br/>
-
+  
+    <div align="center">
+        @if (@Model.Count == 0)
+        {
+            @Html.Raw("<h1 style='color: #fff' class='display-4'>No Recipes found</h1>");
+        }
+    </div>
     <div align="center">
         <div>
             <div class="row">
-
                 @foreach (var recipe in @Model)
                 {
                     <div class="col-md-4">
@@ -33,21 +73,19 @@
                             }
                             <div class="card-body">
                                 <h5 class="card-title">@recipe.RecipeName</h5>
-                                <p class="card-text"><em>@recipe.RecipeDescShort</em></p>
-                                <div class="btn-group shadow-sm">
-                                    <a href="recipes/page/@recipe.RecipeId" class="btn btn-info">View</a>
-                                    <a href="recipes/edit/@recipe.RecipeId" class="btn btn-info">Edit</a>
-                                </div>
+                                <p class="card-text" style="line-height: 1em;">
+                                    <em>@recipe.RecipeDescShort</em>
+                                </p>
+                                <a href="/recipes/page/@recipe.RecipeId" class="btn btn-info shadow-lg">View</a>
+                            </div>
+                            <div class="card-footer" style="padding-bottom: 1px">
+                                <p>Created by @recipe.RecipeOwner</p>
                             </div>
                         </div>
                         <br/>
                     </div>
                 }
             </div>
-            @* <div class="col-md-6"> *@
-            @* <h1>two</h1> *@
-            @*     </div> *@
-
         </div>
     </div>
 
