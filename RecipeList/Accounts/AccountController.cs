@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Win32;
 using RecipeList.Authentication;
 
 namespace RecipeList.Accounts
@@ -70,14 +71,14 @@ namespace RecipeList.Accounts
             _db.Users.Add(user);
             _db.SaveChanges();
 
-            var emailVerification = new EmailVerification
+            var uniqueIdentifier = new UniqueIdentifiers
             {
                 UserId = user.Id,
-                GuId = Guid.NewGuid(),
+                UniqueId = Guid.NewGuid(),
                 IsVerified = false
             };
 
-            _db.EmailVerifications.Add(emailVerification);
+            _db.UniqueIdentifiers.Add(uniqueIdentifier);
             _db.SaveChanges();
 //
 //            _emailSender.SendVerificationEmail(user, emailVerification);
@@ -86,7 +87,7 @@ namespace RecipeList.Accounts
             const string fromName = "RecipeList";
             const string subject = "RecipeList Confirmation Email";
             var body = "Click <a href='https://localhost:5001/account/verify/" + user.Id + "/" +
-                       emailVerification.GuId + "'>Here</a> to confirm your email and gain access to the site!";
+                       uniqueIdentifier.UniqueId + "'>Here</a> to confirm your email and gain access to the site!";
 
             _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
             return RedirectToAction("AwaitingVerification");
@@ -103,6 +104,43 @@ namespace RecipeList.Accounts
         public IActionResult ForgotUsername()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Route("account/forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("account/forgot/password")]
+        public IActionResult ProcessForgotPassword(string email)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                return RedirectToAction("ForgotPassword");
+            }
+
+            const string from = "infinity.test.email@gmail.com";
+            const string fromName = "RecipeList";
+            const string subject = "RecipeList Password Recovery";
+            var linkId = Guid.NewGuid();
+            var unique_identifier = new UniqueIdentifiers
+            {
+                UserId = user.Id,
+                UniqueId = linkId,
+                IsVerified = false
+            };
+            _db.UniqueIdentifiers.Add(unique_identifier);
+            _db.SaveChanges();
+
+            var body = "Hello " + user.DisplayName +
+                       ",<br/><br/>Click this <a href='https://localhost:5001/account/recovery/" + user.Id + "/" +
+                       linkId + "'>link</a> to reset your password.";
+            _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
+            return RedirectToAction("Login");
         }
 
         [HttpPost]
@@ -127,27 +165,59 @@ namespace RecipeList.Accounts
         }
 
         [HttpGet]
-        [Route("account/verify/{id}/{guid}")]
-        public IActionResult Verify(int id, Guid guid)
+        [Route("account/recovery/{id}/{uniqueId}")]
+        public IActionResult Recovery(int id, Guid uniqueId)
         {
-            var dbEmailVer = _db.EmailVerifications.FirstOrDefault(e => e.UserId == id);
-            var dbExpiredGuid = _db.ExpiredGuids.Any(e => e.ExpiredGuId == guid);
-            if (dbExpiredGuid)
+            var dbUniqueId = _db.UniqueIdentifiers.FirstOrDefault(u => uniqueId == uniqueId);
+            if (dbUniqueId == null)
             {
-                return View("ExpiredGuidView");
+                return RedirectToAction("Login");
             }
 
-            if (guid != dbEmailVer.GuId)
+            dbUniqueId.IsVerified = true;
+            ViewData["user"] = id;
+            return View("Recovery");
+        }
+
+        [HttpPost]
+        public IActionResult Recover(string firstPassword, int user)
+        {
+            var dbUser = _db.Users.FirstOrDefault(u => u.Id == user);
+
+            if (dbUser == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            dbUser.Password = _passwordHasher.HashPassword(firstPassword);
+            _db.SaveChanges();
+
+            return RedirectToAction("RecoverySuccess");
+        }
+
+        [HttpGet]
+        [Route("account/recover/success")]
+        public IActionResult RecoverySuccess()
+        {
+            return View();
+        }
+        
+        [HttpGet]
+        [Route("account/verify/{id}/{uniqueId}")]
+        public IActionResult Verify(int id, Guid uniqueId)
+        {
+            var dbEmailVer = _db.UniqueIdentifiers.FirstOrDefault(e => e.UserId == id);
+            if (dbEmailVer.IsVerified)
+            {
+                return View("ExpiredEmailVerifyView");
+            }
+
+            if (uniqueId != dbEmailVer.UniqueId)
             {
                 return View("/");
             }
 
             dbEmailVer.IsVerified = true;
-            var expiredGuid = new ExpiredGuid
-            {
-                ExpiredGuId = guid
-            };
-            _db.ExpiredGuids.Add(expiredGuid);
             _db.SaveChanges();
             return View();
         }
@@ -180,7 +250,7 @@ namespace RecipeList.Accounts
                 return View("Login");
             }
 
-            var dbEmailVer = _db.EmailVerifications.FirstOrDefault(e => e.UserId == dbUser.Id);
+            var dbEmailVer = _db.UniqueIdentifiers.FirstOrDefault(e => e.UserId == dbUser.Id);
             if (!dbEmailVer.IsVerified)
             {
                 ModelState.AddModelError("Username", "The specified user has not yet verified their email");

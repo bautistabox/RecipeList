@@ -13,9 +13,8 @@ namespace RecipeList
         public DbSet<User> Users { get; set; }
         public DbSet<Ingredient.Ingredient> Ingredients { get; set; }
         public DbSet<ShoppingList> Lists { get; set; }
-        public DbSet<EmailVerification> EmailVerifications { get; set; }
+        public DbSet<UniqueIdentifiers> UniqueIdentifiers { get; set; }
         public DbSet<ListItem> ListItems { get; set; }
-        public DbSet<ExpiredGuid> ExpiredGuids { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Recipes.Recipe> Recipes { get; set; }
         public DbSet<RecipeIngredients> RecipeIngredients { get; set; }

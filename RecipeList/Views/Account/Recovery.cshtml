@@ -1,0 +1,24 @@
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var user = ViewData["user"];
+}
+<div align="center">
+    <h2 class="display-4" style="color: #f0ead6">Reset your password</h2><br/>
+    <div align="left" style="width: 40%">
+        <br/>
+        <form action="/account/recover" method="post">
+            <div style="padding: 15px; background: #f0ead6">
+                <div align="center">
+                    <div class="form-group" align="left" style="width: 75%; color: #1560bd">
+                        <label for="password">Please enter a new password</label><br/>
+                        <input class="form-control" type="password" id="password" name="firstPassword" placeholder="Enter password"/>
+                        <input class="form-control" type="password" name="secondPassword" placeholder="Re-enter password"/>
+                        <input type="hidden" name="user" value="@user"/>
+                    </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

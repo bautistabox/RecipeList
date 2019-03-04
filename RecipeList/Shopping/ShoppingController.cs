@@ -20,6 +20,18 @@ namespace RecipeList.Shopping
             _db = db;
         }
 
+        public JsonResult GetSearchValue(string search)
+        {
+            var allItems = _db.ListItems.Where(i => i.ItemName.Contains(search)).Select(i => new ListItem
+            {
+                Id = i.Id,
+                ItemName = i.ItemName,
+                ListId = i.ListId
+            }).ToList();
+
+            return new JsonResult (allItems);
+        }
+
         [HttpGet]
         public IActionResult Lists()
         {

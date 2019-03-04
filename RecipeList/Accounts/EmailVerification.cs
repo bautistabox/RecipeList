@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RecipeList.Accounts
 {
-    [Table("email_verification")]
-    public class EmailVerification
+    [Table("unique_identifiers")]
+    public class UniqueIdentifiers
     {
         [Column("id")] [Key] public int Id { get; set; }
         [Column("user_id")] public int UserId { get; set; }
-        [Column("guid")] public Guid GuId { get; set; }
+        [Column("unique_id")] public Guid UniqueId { get; set; }
         [Column("is_verified")] public bool IsVerified { get; set; }
     }
 }

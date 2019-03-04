@@ -6,7 +6,7 @@
     Layout = "_Layout";
     var items = (List<string>) ViewData["items"];
     var user = (string) ViewData["username"];
-    var defaultTitle = user + "'s List"; 
+    var defaultTitle = user + "'s List";
 }
 <!DOCTYPE html>
 
@@ -31,7 +31,8 @@
                 <div class="form-group" align="center">
                     <label for="listItemInput" style="color: #1560bd">
                         Add Items to your list:
-                        <input list="items" name="myListItem" id="listItemInput"/>
+                    
+                    <input list="items" name="myListItem" id="listItemInput"/>
                     </label>
                     <datalist id="items">
                         @foreach (var i in items)
