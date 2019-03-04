@@ -1,0 +1,27 @@
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div align="center">
+    <h2 class="display-4" style="color: #f0ead6">Recover your username</h2><br/>
+    <div align="left" style="width: 40%">
+        <br/>
+        <form action="/account/forgot/username" method="post">
+            <div style="padding: 15px; background: #f0ead6">
+                <label for="inputEmail" style="color: #1560bd">
+                    Don't worry! You may have forgotten your username,
+                    and that's okay! Enter your email address below
+                    to receive an email including your username.
+                </label><br/><br/>
+                <div class="input-group mb-3">
+                    <input type="email" id="inputEmail" class="form-control"
+                           name="Email" placeholder="Email Address"/>
+                    <div class="input-group-append">
+                        <input type="submit" class="btn btn-info" value="Go"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

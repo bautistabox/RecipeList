@@ -11,7 +11,7 @@ namespace RecipeList.Accounts
         private readonly RecipesDbContext _db;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IEmailSender _emailSender;
-        
+
         public AccountController(RecipesDbContext db, IPasswordHasher passwordHasher, IEmailSender emailSender)
         {
             _db = db;
@@ -64,9 +64,9 @@ namespace RecipeList.Accounts
 
                 return View("Register");
             }
-            
+
             user.Password = _passwordHasher.HashPassword(user.Password);
-            
+
             _db.Users.Add(user);
             _db.SaveChanges();
 
@@ -79,9 +79,16 @@ namespace RecipeList.Accounts
 
             _db.EmailVerifications.Add(emailVerification);
             _db.SaveChanges();
+//
+//            _emailSender.SendVerificationEmail(user, emailVerification);
 
-            _emailSender.SendEmail(user, emailVerification);
+            const string from = "infinity.test.email@gmail.com";
+            const string fromName = "RecipeList";
+            const string subject = "RecipeList Confirmation Email";
+            var body = "Click <a href='https://localhost:5001/account/verify/" + user.Id + "/" +
+                       emailVerification.GuId + "'>Here</a> to confirm your email and gain access to the site!";
 
+            _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
             return RedirectToAction("AwaitingVerification");
         }
 
@@ -89,6 +96,34 @@ namespace RecipeList.Accounts
         public IActionResult AwaitingVerification()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Route("account/forgot-username")]
+        public IActionResult ForgotUsername()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("account/forgot/username")]
+        public IActionResult ProcessForgotUsername(string email)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
+            {
+                return RedirectToAction("ForgotUsername");
+            }
+
+            const string from = "infinity.test.email@gmail.com";
+            const string fromName = "RecipeList";
+            const string subject = "RecipeList Username Recovery";
+            var body = "Hello " + user.DisplayName + ",<br/><br/>The username associated with this email is: <b>" +
+                       user.Username + "</b>";
+
+            _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
+            return RedirectToAction("Login");
         }
 
         [HttpGet]
@@ -130,7 +165,7 @@ namespace RecipeList.Accounts
             {
                 return View("Login");
             }
-            
+
             var dbUser = _db.Users.FirstOrDefault(u => u.Username == model.Username);
             if (dbUser == null)
             {
@@ -138,7 +173,7 @@ namespace RecipeList.Accounts
                 return View("Login");
             }
 
-            
+
             if (!_passwordHasher.VerifyPassword(model.Password, dbUser.Password))
             {
                 ModelState.AddModelError("Password", "The specified user or password is incorrect.");
@@ -163,6 +198,7 @@ namespace RecipeList.Accounts
             {
                 return RedirectToAction("Home", "Admin");
             }
+
             return RedirectToAction("Profile");
         }
 

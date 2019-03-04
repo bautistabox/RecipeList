@@ -24,11 +24,11 @@ namespace RecipeList.Recipe
         {
             // Look for recipes where the search term is in the name
             var dbRecipes = _db.Recipes.Where(r => r.Name.Contains(model.SearchQuery)).ToList();
-            
+
             // LOOKING FOR RECIPES THAT USE THE SEARCH TERM AS AN INGREDIENT
             // get id of this ingredient
             var dbIngredients = _db.Ingredients.Where(i => i.Name.Contains(model.SearchQuery)).ToList();
-            
+
             // use the id to select recipe_ingredients
             var dbRecipeIngredients = new List<RecipeIngredients>();
             foreach (var ingredient in dbIngredients)
@@ -39,25 +39,37 @@ namespace RecipeList.Recipe
                     dbRecipeIngredients.Add(tmp);
                 }
             }
-            
+
             // use the recipe_ingredients recipe_id to select more recipes that include that ingredient
             var RecipeIds = new List<int>();
             foreach (var recipeIngredient in dbRecipeIngredients)
             {
                 RecipeIds.Add(recipeIngredient.RecipeId);
             }
-            
+
             // add them to the recipes that use the search term in their name
             foreach (var id in RecipeIds)
             {
-                dbRecipes.Add(_db.Recipes.FirstOrDefault(r => r.Id == id));
+                var flag = false;
+                foreach (var recipe in dbRecipes)
+                {
+                    if (recipe.Id == id)
+                    {
+                        flag = true;
+                    }
+                }
+
+                if (!flag)
+                {
+                    dbRecipes.Add(_db.Recipes.FirstOrDefault(r => r.Id == id));
+                }
             }
-            
+
             var recipeItems = new List<RecipeItems>();
             foreach (var recipe in dbRecipes)
             {
                 var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
-                
+
                 var recipeItem = new RecipeItems
                 {
                     RecipeId = recipe.Id,
@@ -75,6 +87,7 @@ namespace RecipeList.Recipe
                 {
                     recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
                 }
+
                 if (recipeItem.RecipeDescription.Length > 68)
                 {
                     recipeItem.RecipeDescShort = recipeItem.RecipeDescription.Substring(0, 68) + "...";
@@ -83,17 +96,16 @@ namespace RecipeList.Recipe
                 {
                     recipeItem.RecipeDescShort = recipeItem.RecipeDescription;
                 }
-                
+
                 recipeItems.Add(recipeItem);
             }
-            
+
             var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             ViewData["allCategories"] = allDbCategories;
 
             return View("Index", recipeItems);
-
         }
 
         [HttpGet]
@@ -104,14 +116,14 @@ namespace RecipeList.Recipe
             {
                 return View("Index");
             }
-            
+
             var dbRecipes = _db.Recipes.Where(r => r.CategoryId == categoryId);
 
             var recipeItems = new List<RecipeItems>();
             foreach (var recipe in dbRecipes)
             {
                 var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
-                
+
                 var recipeItem = new RecipeItems
                 {
                     RecipeId = recipe.Id,
@@ -129,6 +141,7 @@ namespace RecipeList.Recipe
                 {
                     recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
                 }
+
                 if (recipeItem.RecipeDescription.Length > 68)
                 {
                     recipeItem.RecipeDescShort = recipeItem.RecipeDescription.Substring(0, 68) + "...";
@@ -137,10 +150,10 @@ namespace RecipeList.Recipe
                 {
                     recipeItem.RecipeDescShort = recipeItem.RecipeDescription;
                 }
-                
+
                 recipeItems.Add(recipeItem);
             }
-            
+
             var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
@@ -152,22 +165,22 @@ namespace RecipeList.Recipe
         [HttpGet]
         public IActionResult Index()
         {
-            var sessionUId = HttpContext.Session.GetInt32("_Userid");
-            var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
+//            var sessionUId = HttpContext.Session.GetInt32("_Userid");
+//            var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
 
             var model = _db.Recipes
-                .Select(u => new RecipeItems
+                .Select(r => new RecipeItems
                 {
-                    RecipeId = u.Id,
-                    RecipeOwner = user.DisplayName,
-                    RecipeOwnderId = sessionUId.Value,
-                    RecipeName = u.Name,
-                    RecipeDescription = u.Description,
-                    RecipeInstruction = u.Instruction,
-                    RecipePhoto = u.Photo,
-                    RecipeCreatedDate = u.CreatedAt,
-                    RecipeUpdatedDate = u.UpdatedAt
-                }).ToList();
+                    RecipeId = r.Id,
+                    RecipeOwner = _db.Users.Where(u => u.Id == r.UploaderId).Select(u => u.DisplayName).First(),
+                    RecipeOwnderId = r.UploaderId,
+                    RecipeName = r.Name,
+                    RecipeDescription = r.Description,
+                    RecipeInstruction = r.Instruction,
+                    RecipePhoto = r.Photo,
+                    RecipeCreatedDate = r.CreatedAt,
+                    RecipeUpdatedDate = r.UpdatedAt
+                }).OrderBy(x => Guid.NewGuid()).Take(6).ToList();
 
             foreach (var mod in model)
             {
@@ -185,12 +198,12 @@ namespace RecipeList.Recipe
                     mod.RecipeDescShort = mod.RecipeDescription;
                 }
             }
-            
+
             var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             ViewData["allCategories"] = allDbCategories;
-            
+
             return View(model);
         }
 
@@ -224,7 +237,7 @@ namespace RecipeList.Recipe
                 .Where(r => r.RecipeId == recipeId)
                 .Select(i => new {i.IngredientId, i.Amount, i.AmountType})
                 .ToArray();
-            List<int> ingIds = new List<int>();
+            var ingIds = new List<int>();
 
             for (var i = 0; i < recipeIngredients.Length; i++)
             {
@@ -255,7 +268,7 @@ namespace RecipeList.Recipe
 
             for (var i = 0; i < recipeInfo.Ingredients.Count; i++)
             {
-                string fullIngredient = "";
+                var fullIngredient = "";
                 if (recipeInfo.RecipeIngredients[i].Amount != "N/A")
                 {
                     fullIngredient = recipeInfo.RecipeIngredients[i].Amount + " ";
@@ -306,7 +319,7 @@ namespace RecipeList.Recipe
             }
 
             _db.SaveChanges();
-            
+
             foreach (var ingredientItem in model.Ingredients)
             {
                 var ingredient = new Ingredient.Ingredient();
@@ -325,7 +338,7 @@ namespace RecipeList.Recipe
                 {
                     ingredient = dbIngredient;
                 }
-                
+
                 var recipeIngredient = new RecipeIngredients
                 {
                     IngredientId = ingredient.Id,
