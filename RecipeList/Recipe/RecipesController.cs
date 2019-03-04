@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using RecipeList.Authentication;
+using RecipeList.Recipes;
+
 namespace RecipeList.Recipe
 {
     [Authorize]
@@ -20,10 +22,78 @@ namespace RecipeList.Recipe
         [HttpGet]
         public IActionResult Search(RecipeSearchInputModel model)
         {
-            var dbRecipes = _db.Recipes.ToList();
+            // Look for recipes where the search term is in the name
+            var dbRecipes = _db.Recipes.Where(r => r.Name.Contains(model.SearchQuery)).ToList();
+            
+            // LOOKING FOR RECIPES THAT USE THE SEARCH TERM AS AN INGREDIENT
+            // get id of this ingredient
+            var dbIngredients = _db.Ingredients.Where(i => i.Name.Contains(model.SearchQuery)).ToList();
+            
+            // use the id to select recipe_ingredients
+            var dbRecipeIngredients = new List<RecipeIngredients>();
+            foreach (var ingredient in dbIngredients)
+            {
+                var temp = _db.RecipeIngredients.Where(ri => ri.IngredientId == ingredient.Id).ToList();
+                foreach (var tmp in temp)
+                {
+                    dbRecipeIngredients.Add(tmp);
+                }
+            }
+            
+            // use the recipe_ingredients recipe_id to select more recipes that include that ingredient
+            var RecipeIds = new List<int>();
+            foreach (var recipeIngredient in dbRecipeIngredients)
+            {
+                RecipeIds.Add(recipeIngredient.RecipeId);
+            }
+            
+            // add them to the recipes that use the search term in their name
+            foreach (var id in RecipeIds)
+            {
+                dbRecipes.Add(_db.Recipes.FirstOrDefault(r => r.Id == id));
+            }
+            
+            var recipeItems = new List<RecipeItems>();
+            foreach (var recipe in dbRecipes)
+            {
+                var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
+                
+                var recipeItem = new RecipeItems
+                {
+                    RecipeId = recipe.Id,
+                    RecipeOwner = recipeOwner.DisplayName,
+                    RecipeOwnderId = recipe.UploaderId,
+                    RecipeName = recipe.Name,
+                    RecipeDescription = recipe.Description,
+                    RecipeInstruction = recipe.Instruction,
+                    RecipePhoto = recipe.Photo,
+                    RecipeCreatedDate = recipe.CreatedAt,
+                    RecipeUpdatedDate = recipe.UpdatedAt
+                };
 
-            Console.WriteLine(model.SearchQuery);
-            return RedirectToAction("Index");
+                if (recipeItem.RecipePhoto != null)
+                {
+                    recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
+                }
+                if (recipeItem.RecipeDescription.Length > 68)
+                {
+                    recipeItem.RecipeDescShort = recipeItem.RecipeDescription.Substring(0, 68) + "...";
+                }
+                else
+                {
+                    recipeItem.RecipeDescShort = recipeItem.RecipeDescription;
+                }
+                
+                recipeItems.Add(recipeItem);
+            }
+            
+            var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
+            var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
+            ViewData["categories"] = dbCategories;
+            ViewData["allCategories"] = allDbCategories;
+
+            return View("Index", recipeItems);
+
         }
 
         [HttpGet]
@@ -287,7 +357,7 @@ namespace RecipeList.Recipe
                 }
             }
 
-            var recipe = new Recipe
+            var recipe = new Recipes.Recipe
             {
                 Name = model.Name,
                 Description = model.Description,
