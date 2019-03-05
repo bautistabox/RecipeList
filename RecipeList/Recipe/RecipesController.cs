@@ -109,6 +109,54 @@ namespace RecipeList.Recipe
         }
 
         [HttpGet]
+        [Route("recipes/user/{userId}")]
+        public IActionResult UserRecipes(int userId)
+        {
+            var dbRecipes = _db.Recipes.Where(r => r.UploaderId == userId).ToList();
+            var recipeItems = new List<RecipeItems>();
+            foreach (var recipe in dbRecipes)
+            {
+                var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
+
+                var recipeItem = new RecipeItems
+                {
+                    RecipeId = recipe.Id,
+                    RecipeOwner = recipeOwner.DisplayName,
+                    RecipeOwnderId = recipe.UploaderId,
+                    RecipeName = recipe.Name,
+                    RecipeDescription = recipe.Description,
+                    RecipeInstruction = recipe.Instruction,
+                    RecipePhoto = recipe.Photo,
+                    RecipeCreatedDate = recipe.CreatedAt,
+                    RecipeUpdatedDate = recipe.UpdatedAt
+                };
+
+                if (recipeItem.RecipePhoto != null)
+                {
+                    recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
+                }
+
+                if (recipeItem.RecipeDescription.Length > 68)
+                {
+                    recipeItem.RecipeDescShort = recipeItem.RecipeDescription.Substring(0, 68) + "...";
+                }
+                else
+                {
+                    recipeItem.RecipeDescShort = recipeItem.RecipeDescription;
+                }
+
+                recipeItems.Add(recipeItem);
+            }
+
+            var dbCategories = _db.Categories.OrderBy(s => Guid.NewGuid()).Take(8).ToList();
+            var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
+            ViewData["categories"] = dbCategories;
+            ViewData["allCategories"] = allDbCategories;
+            
+            return View("Index", recipeItems);
+        }
+        
+        [HttpGet]
         [Route("recipes/search/category/{categoryId}")]
         public IActionResult SearchCategories(int categoryId)
         {
@@ -458,7 +506,7 @@ namespace RecipeList.Recipe
                 .Where(r => r.RecipeId == recipeId)
                 .Select(i => new {i.IngredientId, i.Amount, i.AmountType})
                 .ToArray();
-            List<int> ingIds = new List<int>();
+            var ingIds = new List<int>();
 
             for (var i = 0; i < recipeIngredients.Length; i++)
             {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -283,7 +284,61 @@ namespace RecipeList.Accounts
         [HttpGet]
         public IActionResult Profile()
         {
-            return View();
+            var dbUser = _db.Users.FirstOrDefault(u => u.Id == HttpContext.Session.GetInt32("_Userid"));
+            if (dbUser == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var dbRecipes = _db.Recipes.Where(r => r.UploaderId == dbUser.Id).ToList();
+            var recipeCount = 0;
+            var recipeIds = new List<int>();
+            if (dbRecipes.Count > 0)
+            {
+                foreach (var recipe in dbRecipes)
+                {
+                    recipeIds.Add(recipe.Id);
+                }
+                recipeCount = dbRecipes.Count;
+            }
+
+            var dbUserBio = _db.UserBios.FirstOrDefault(b => b.UserId == dbUser.Id);
+            var bio = "";
+            if (dbUserBio != null)
+            {
+                bio = dbUserBio.Bio;
+            }
+
+            
+//            var dbUserRatings = _db.RecipeRatings.Where(r => r.RecipeId == dbUser.Id).ToList();
+            var dbUserRatings = _db.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).ToList();
+            var numberRatings = 0;
+            var avgRating = 0;
+            if (dbUserRatings.Count > 0)
+            {
+                numberRatings = dbUserRatings.Count;
+                foreach (var rating in dbUserRatings)
+                {
+                    avgRating += rating.Rating;
+                }
+
+                avgRating = avgRating / dbUserRatings.Count;
+            }
+            
+            var model = new ProfileViewModel
+            {
+                DisplayName = dbUser.DisplayName,
+                Username = dbUser.Username,
+                UserId = dbUser.Id,
+                Email = dbUser.Email,
+                Rating = avgRating,
+                NumberRecipes = recipeCount,
+                NumberRatings = numberRatings,
+                Bio = bio
+            };
+           
+            
+            return View(model);
         }
     }
 }

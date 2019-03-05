@@ -18,6 +18,8 @@ namespace RecipeList
         public DbSet<Category> Categories { get; set; }
         public DbSet<Recipes.Recipe> Recipes { get; set; }
         public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
+        public DbSet<UserBio> UserBios { get; set; }
+        public DbSet<RecipeRating> RecipeRatings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
