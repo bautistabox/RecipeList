@@ -412,7 +412,7 @@ namespace RecipeList.Recipe
                 _db.SaveChanges();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Page",new {recipeId = dbRecipe.Id} );
         }
 
         [HttpPost]

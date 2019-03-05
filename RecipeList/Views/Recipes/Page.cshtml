@@ -21,43 +21,47 @@
         <div style="width: 75%">
             <div class="container">
                 <div class="row">
-                    <div class="col-sm">
-                        <div class="card">
-                            <div class="card-header">
-                                <p class="text-left font-weight-bold">Ingredients</p>
-                            </div>
-                            <div class="card-body text-left">
-                                @foreach (var ingredient in @Model.IngredientsList)
-                                {
-                                    <ul>
-                                        <li>@ingredient</li>
-                                    </ul>
-                                }
-                            </div>
-                            <div class="card-footer">
-                                <form action="/shopping/create-list" method="post">
-                                    <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
-                                    <input type="submit" class="btn btn-info" value="Add items to shopping list"/>
-                                </form>
+                    <div style="width: 50%">
+                        <div style="float: left">
+                            <div class="card">
+                                <div class="card-header">
+                                    <p class="text-left font-weight-bold">Ingredients</p>
+                                </div>
+                                <div class="card-body text-left">
+                                    @foreach (var ingredient in @Model.IngredientsList)
+                                    {
+                                        <ul>
+                                            <li>@ingredient</li>
+                                        </ul>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <form action="/shopping/create-list" method="post">
+                                        <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
+                                        <input type="submit" class="btn btn-info" value="Add items to shopping list"/>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm">
-                        <div class="card">
-                            <div class="card-img-top">
-                                <img class="img-fluid" src="data:image/png;base64, @Model.Image" alt="Picture"/>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-left">
-                                    <em>@Model.Recipe.Description</em>
-                                </p>
+                    <div style="width: 50%">
+                        <div style="float: right">
+                            <div class="card">
+                                <div class="card-img-top">
+                                    <img class="img-fluid" src="data:image/png;base64, @Model.Image" alt="Picture"/>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-left">
+                                        <em>@Model.Recipe.Description</em>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <br/>
                 <div class="row">
-                    <div class="card">
+                    <div class="card" style="width: 100%">
                         <div class="card-header">
                             <p class="text-left font-weight-bold">Cooking Instructions</p>
                         </div>
@@ -96,13 +100,13 @@
                             @foreach (var comment in CommentInfo)
                             {
                                 <div class="card" align="left">
-                                    <div class="card-header">
-                                        <b><a href="/account/user/@comment.CommentObj.UserId">@comment.Commenter</a>:</b>
+                                    <div class="card-header" style="line-height: .05em">
+                                        <b><a href="/account/user/@comment.CommentObj.UserId">@comment.Commenter:</a></b>
                                     </div>
                                     <div class="card-body">
                                         @comment.CommentObj.CommentText
                                     </div>
-                                    <div class="card-footer">
+                                    <div class="card-footer" style="line-height: .05em">
                                         @comment.CommentObj.CreatedAt
                                     </div>
                                 </div>
