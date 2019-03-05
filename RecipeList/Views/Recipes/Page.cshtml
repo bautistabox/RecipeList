@@ -5,17 +5,18 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
-    var CommentInfo = (List<CommentInfo>) ViewData["CommentInfo"];
+    var commentInfo = (List<CommentInfo>) ViewData["CommentInfo"];
+    var RecipeOwner = (string) ViewData["RecipeOwner"];
 }
 <body>
 <div class="card" style="background-color: transparent">
     <div align="center" class="card-header" style="background: #f0ead6">
         <h1 class="display-4">@Model.Recipe.Name</h1>
-        @Model.Category.Name
+        <b>Category: </b><a href="/recipes/search/category/@Model.Category.Id">@Model.Category.Name</a>
         @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
         {
             <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info" style="float: right">Edit</a>
-        }
+        }<em style="float:left"><b>Submitted by: <a href="/account/user/@Model.Recipe.UploaderId">@RecipeOwner</a></b></em>
     </div>
     <div class="card-body" align="center">
         <div style="width: 75%">
@@ -77,13 +78,13 @@
                     <div class="card" style="width: 100%">
                         <div class="card-header">
                             <p class="font-weight-bold" style="float: left">Comments</p>
-                            @if (CommentInfo.Count == 1)
+                            @if (commentInfo.Count == 1)
                             {
-                                <p class="font-weight-bold" style="float: right">@CommentInfo.Count comment</p>
+                                <p class="font-weight-bold" style="float: right">@commentInfo.Count comment</p>
                             }
                             else
                             {
-                                <p class="font-weight-bold" style="float: right">@CommentInfo.Count comments</p>
+                                <p class="font-weight-bold" style="float: right">@commentInfo.Count comments</p>
                             }
                         </div>
                         <div class="card-body">
@@ -97,7 +98,7 @@
                             </form>
                         </div>
                         <div class="card-footer">
-                            @foreach (var comment in CommentInfo)
+                            @foreach (var comment in commentInfo)
                             {
                                 <div class="card" align="left">
                                     <div class="card-header" style="line-height: .05em">

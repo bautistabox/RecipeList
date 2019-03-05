@@ -74,7 +74,7 @@ namespace RecipeList.Recipe
                 {
                     RecipeId = recipe.Id,
                     RecipeOwner = recipeOwner.DisplayName,
-                    RecipeOwnderId = recipe.UploaderId,
+                    RecipeOwnerId = recipe.UploaderId,
                     RecipeName = recipe.Name,
                     RecipeDescription = recipe.Description,
                     RecipeInstruction = recipe.Instruction,
@@ -122,7 +122,7 @@ namespace RecipeList.Recipe
                 {
                     RecipeId = recipe.Id,
                     RecipeOwner = recipeOwner.DisplayName,
-                    RecipeOwnderId = recipe.UploaderId,
+                    RecipeOwnerId = recipe.UploaderId,
                     RecipeName = recipe.Name,
                     RecipeDescription = recipe.Description,
                     RecipeInstruction = recipe.Instruction,
@@ -176,7 +176,7 @@ namespace RecipeList.Recipe
                 {
                     RecipeId = recipe.Id,
                     RecipeOwner = recipeOwner.DisplayName,
-                    RecipeOwnderId = recipe.UploaderId,
+                    RecipeOwnerId = recipe.UploaderId,
                     RecipeName = recipe.Name,
                     RecipeDescription = recipe.Description,
                     RecipeInstruction = recipe.Instruction,
@@ -221,7 +221,7 @@ namespace RecipeList.Recipe
                 {
                     RecipeId = r.Id,
                     RecipeOwner = _db.Users.Where(u => u.Id == r.UploaderId).Select(u => u.DisplayName).First(),
-                    RecipeOwnderId = r.UploaderId,
+                    RecipeOwnerId = r.UploaderId,
                     RecipeName = r.Name,
                     RecipeDescription = r.Description,
                     RecipeInstruction = r.Instruction,
@@ -579,6 +579,7 @@ namespace RecipeList.Recipe
             }
 
             ViewData["CommentInfo"] = commentInfoList;
+            ViewData["RecipeOwner"] = _db.Users.FirstOrDefault(u => u.Id == recipeInfo.Recipe.UploaderId).DisplayName;
 
             return View(recipeInfo);
         }

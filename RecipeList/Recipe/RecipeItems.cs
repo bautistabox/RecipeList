@@ -6,7 +6,7 @@ namespace RecipeList.Recipe
     {
         public int RecipeId { get; set; }
         public string RecipeOwner { get; set; }
-        public Int32 RecipeOwnderId { get; set; }
+        public Int32 RecipeOwnerId { get; set; }
         public string RecipeName { get; set; }
         public string RecipeDescription { get; set; }
         public string RecipeDescShort { get; set; }
