@@ -336,10 +336,24 @@ namespace RecipeList.Recipe
         [HttpPost]
         public IActionResult Update(RecipeInputModel model)
         {
+            var category = _db.Categories.SingleOrDefault(c => c.Name == model.Category);
+            int categoryId;
+            
             var dbRecipe = _db.Recipes.SingleOrDefault(r => r.Id == model.RecipeId);
+            if (dbRecipe == null)
+            {
+                return RedirectToAction("Index");
+            }
+            if (category == null)
+            {
+                categoryId = dbRecipe.CategoryId;
+            }
+
+            categoryId = category.Id;
             dbRecipe.Name = model.Name;
             dbRecipe.Description = model.Description;
             dbRecipe.Instruction = model.Instruction;
+            dbRecipe.CategoryId = categoryId;
             dbRecipe.UpdatedAt = DateTime.Now;
             if (model.Photo != null)
             {
@@ -550,6 +564,21 @@ namespace RecipeList.Recipe
                 fullIngredient = fullIngredient + recipeInfo.Ingredients[i].Name;
                 recipeInfo.IngredientsList.Add(fullIngredient);
             }
+
+            var comments = _db.Comments.Where(c => c.RecipeId == recipeInfo.Recipe.Id).OrderByDescending(u => u.CreatedAt).ToList();
+            var commentInfoList = new List<CommentInfo>();
+            foreach (var comment in comments)
+            {
+                var commentInfo = new CommentInfo
+                {
+                    CommentObj = comment,
+                    Commenter = _db.Users.FirstOrDefault(u => u.Id == comment.UserId).DisplayName
+                };
+                
+                commentInfoList.Add(commentInfo);
+            }
+
+            ViewData["CommentInfo"] = commentInfoList;
 
             return View(recipeInfo);
         }

@@ -1,9 +1,11 @@
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using RecipeList.Recipe
 @model RecipeList.Recipe.RecipeInfo
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
+    var CommentInfo = (List<CommentInfo>) ViewData["CommentInfo"];
 }
 <body>
 <div class="card" style="background-color: transparent">
@@ -12,7 +14,7 @@
         @Model.Category.Name
         @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
         {
-            <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info" style="float:right">Edit</a>
+            <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info" style="float: right">Edit</a>
         }
     </div>
     <div class="card-body" align="center">
@@ -64,6 +66,51 @@
                         </div>
                     </div>
                 </div>
+                <br/>
+
+                @* Page Comments *@
+                <div class="row">
+                    <div class="card" style="width: 100%">
+                        <div class="card-header">
+                            <p class="font-weight-bold" style="float: left">Comments</p>
+                            @if (CommentInfo.Count == 1)
+                            {
+                                <p class="font-weight-bold" style="float: right">@CommentInfo.Count comment</p>
+                            }
+                            else
+                            {
+                                <p class="font-weight-bold" style="float: right">@CommentInfo.Count comments</p>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="/comments/save">
+                                <div class="form-group" align="left">
+                                    <textarea class="form-control" rows="3" placeholder="What are your thoughts?" name="CommentText"></textarea>
+                                    <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
+                                    <input type="hidden" name="CommentUploader" value="@Model.CurrentUser"/>
+                                </div>
+                                <button class="btn btn-info" style="float: right">Comment</button>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            @foreach (var comment in CommentInfo)
+                            {
+                                <div class="card" align="left">
+                                    <div class="card-header">
+                                        <b><a href="/account/user/@comment.CommentObj.UserId">@comment.Commenter</a>:</b>
+                                    </div>
+                                    <div class="card-body">
+                                        @comment.CommentObj.CommentText
+                                    </div>
+                                    <div class="card-footer">
+                                        @comment.CommentObj.CreatedAt
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @* End of comments *@
             </div>
         </div>
     </div>

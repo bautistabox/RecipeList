@@ -8,7 +8,9 @@ namespace RecipeList
 {
     public class RecipesDbContext : DbContext
     {
-        public RecipesDbContext(DbContextOptions options) : base(options) { }
+        public RecipesDbContext(DbContextOptions options) : base(options)
+        {
+        }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Ingredient.Ingredient> Ingredients { get; set; }
@@ -20,6 +22,7 @@ namespace RecipeList
         public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
         public DbSet<UserBio> UserBios { get; set; }
         public DbSet<RecipeRating> RecipeRatings { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +30,4 @@ namespace RecipeList
                 .HasKey(r => new {r.IngredientId, r.RecipeId});
         }
     }
-    
-    
 }

@@ -43,6 +43,12 @@ namespace RecipeList.Accounts
                 DisplayName = model.DisplayName,
                 RegisteredAt = DateTime.Now
             };
+            
+            var bio = new UserBio
+            {
+                UserId = user.Id,
+                Bio = user.DisplayName + "'s bio"
+            };
 
             var dbUserName = _db.Users.SingleOrDefault(u => u.Username == user.Username);
             var dbUserEmail = _db.Users.SingleOrDefault(u => u.Email == user.Email);
@@ -70,6 +76,7 @@ namespace RecipeList.Accounts
             user.Password = _passwordHasher.HashPassword(user.Password);
 
             _db.Users.Add(user);
+            _db.UserBios.Add(bio);
             _db.SaveChanges();
 
             var uniqueIdentifier = new UniqueIdentifiers
@@ -81,8 +88,6 @@ namespace RecipeList.Accounts
 
             _db.UniqueIdentifiers.Add(uniqueIdentifier);
             _db.SaveChanges();
-//
-//            _emailSender.SendVerificationEmail(user, emailVerification);
 
             const string from = "infinity.test.email@gmail.com";
             const string fromName = "RecipeList";
@@ -280,16 +285,16 @@ namespace RecipeList.Accounts
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize]
         [HttpGet]
-        public IActionResult Profile()
+        [Route("account/user/{id}")]
+        public IActionResult UserProfile(int id)
         {
-            var dbUser = _db.Users.FirstOrDefault(u => u.Id == HttpContext.Session.GetInt32("_Userid"));
+            var dbUser = _db.Users.FirstOrDefault(u => u.Id == id);
             if (dbUser == null)
             {
-                return RedirectToAction("Login");
+                RedirectToAction("NoneFound");
             }
-
+            
             var dbRecipes = _db.Recipes.Where(r => r.UploaderId == dbUser.Id).ToList();
             var recipeCount = 0;
             var recipeIds = new List<int>();
@@ -308,9 +313,7 @@ namespace RecipeList.Accounts
             {
                 bio = dbUserBio.Bio;
             }
-
             
-//            var dbUserRatings = _db.RecipeRatings.Where(r => r.RecipeId == dbUser.Id).ToList();
             var dbUserRatings = _db.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).ToList();
             var numberRatings = 0;
             var avgRating = 0;
@@ -340,6 +343,72 @@ namespace RecipeList.Accounts
             ViewData["Recipes"] = dbRecipes;
            
             return View(model);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var dbUser = _db.Users.FirstOrDefault(u => u.Id == HttpContext.Session.GetInt32("_Userid"));
+            if (dbUser == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var dbRecipes = _db.Recipes.Where(r => r.UploaderId == dbUser.Id).ToList();
+            var recipeCount = 0;
+            var recipeIds = new List<int>();
+            if (dbRecipes.Count > 0)
+            {
+                foreach (var recipe in dbRecipes)
+                {
+                    recipeIds.Add(recipe.Id);
+                }
+                recipeCount = dbRecipes.Count;
+            }
+
+            var dbUserBio = _db.UserBios.FirstOrDefault(b => b.UserId == dbUser.Id);
+            var bio = "";
+            if (dbUserBio != null)
+            {
+                bio = dbUserBio.Bio;
+            }
+            
+            var dbUserRatings = _db.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).ToList();
+            var numberRatings = 0;
+            var avgRating = 0;
+            if (dbUserRatings.Count > 0)
+            {
+                numberRatings = dbUserRatings.Count;
+                foreach (var rating in dbUserRatings)
+                {
+                    avgRating += rating.Rating;
+                }
+
+                avgRating = avgRating / dbUserRatings.Count;
+            }
+            
+            var model = new ProfileViewModel
+            {
+                DisplayName = dbUser.DisplayName,
+                Username = dbUser.Username,
+                UserId = dbUser.Id,
+                Email = dbUser.Email,
+                Rating = avgRating,
+                NumberRecipes = recipeCount,
+                NumberRatings = numberRatings,
+                Bio = bio
+            };
+
+            ViewData["Recipes"] = dbRecipes;
+           
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult NoneFound()
+        {
+            return View();
         }
     }
 }
