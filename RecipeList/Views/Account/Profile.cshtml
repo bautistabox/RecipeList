@@ -1,8 +1,10 @@
+@using RecipeList.Recipes
 @model RecipeList.Accounts.ProfileViewModel;
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
+    var recipes = (List<Recipe>)ViewData["Recipes"];
 }
 <script src="https://unpkg.com/ionicons@4.4.4/dist/ionicons.js"></script>
 
@@ -175,6 +177,24 @@
                             <p>
                                 <em>@Model.NumberRatings</em>
                             </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Recipe</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @for(var i = 0; i < recipes.Count; i++)
+                                {
+                                    <tr><td>@(i+1)</td><td><a href="/recipes/page/@recipes[i].Id">@recipes[i].Name</a></td></tr>
+                                }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 

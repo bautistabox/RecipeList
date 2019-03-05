@@ -336,8 +336,9 @@ namespace RecipeList.Accounts
                 NumberRatings = numberRatings,
                 Bio = bio
             };
+
+            ViewData["Recipes"] = dbRecipes;
            
-            
             return View(model);
         }
     }
