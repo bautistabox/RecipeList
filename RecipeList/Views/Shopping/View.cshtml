@@ -10,17 +10,16 @@
 <div align="center" style="padding: 5%">
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
 </div>
-<br/>
 <div align="center">
-    <div style="width: 40%; background: #f0ead6; padding: 15px">
+    @* <div style="width: 40%; background: #f0ead6; padding: 15px"> *@
 
-        
-            <table class="table table-bordered table-striped table-info" style="width: 80%">
-                <tr>
-                    <th>
-                        <div align="center">@Model.listName</div>
-                    </th>
-                </tr>
+
+    <div class="card" style="width: 40%">
+        <div class="card-header">
+            <b>@Model.listName List</b>
+        </div>
+        <div class="card-body" style="background: #f0ead6;">
+            <table class="table table-bordered table-light">
                 @foreach (var item in Model.listItems)
                 {
                     <tr>
@@ -30,12 +29,12 @@
                     </tr>
                 }
             </table>
-            <br/>
-            <tr>
-                <a class="btn btn-info" href="edit?listId=@Model.listId">Edit</a>
-            </tr>
-        </>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-info" href="edit?listId=@Model.listId">Edit</a>
+        </div>
     </div>
+    @* </div> *@
 </div>
 </body>
 </html>

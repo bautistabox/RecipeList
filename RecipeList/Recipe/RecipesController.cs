@@ -222,9 +222,6 @@ namespace RecipeList.Recipe
         [HttpGet]
         public IActionResult Index()
         {
-//            var sessionUId = HttpContext.Session.GetInt32("_Userid");
-//            var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
-
             var model = _db.Recipes
                 .Select(r => new RecipeItems
                 {
