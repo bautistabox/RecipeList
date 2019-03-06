@@ -1,18 +1,13 @@
-@using System.Diagnostics.Tracing
 @using RecipeList.Recipes
 @model List<RecipeList.Recipe.RecipeItems>
 @{
     var categories = (List<Category>) ViewData["categories"];
     var allCategories = (List<Category>) ViewData["allCategories"];
+    var currentSearch = (string) ViewData["currentSearch"];
 }
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>Recipes</title>
-</head>
 <body>
+<script src="https://unpkg.com/ionicons@4.4.4/dist/ionicons.js"></script>
+<script src="~/js/rating.js"></script>
 <div>
     <div style="float: right">
         <a class="btn btn-info" style="color: #fff;" href="/recipes/new">Create a new recipe!</a>
@@ -52,27 +47,52 @@
             </div>
         </div>
     </div>
-    <br/><br/>
-  
+    <br/>
     <div align="center">
+        @if (currentSearch != null)
+        {
+            @Html.Raw("<h3 style='color: #fff'>" + "Search Results for: " + "<em>" + @currentSearch + "</em>" + "</h3>")
+            ;
+        }
         @if (@Model.Count == 0)
         {
-            @Html.Raw("<h1 style='color: #fff' class='display-4'>No Recipes found</h1>");
+            @Html.Raw("<h1 style='color: #fff' class='display-4'>No Recipes found</h1>")
+            ;
         }
     </div>
+    <br/>
     <div align="center">
         <div>
-            <div class="row">
+            <div class="card-group" style="display: flex;">
+                @{ var iteration = 0; }
                 @foreach (var recipe in @Model)
                 {
+                    // dynamically creating an id for each recipe card
+                    iteration++;
+                    var cardId = "cardRating" + iteration;
+
+                    // start of a card
                     <div class="col-md-4">
                         <div class="card shadow-lg" style="width: 18rem; background: #f0ead6;">
                             @if (@recipe.RecipePhoto != null)
                             {
                                 <img class="card-img-top" src="data:image/png;base64, @recipe.RecipePhoto64" alt="Image Found">
                             }
+
                             <div class="card-body">
                                 <h5 class="card-title">@recipe.RecipeName</h5>
+
+                                @* This div displays the current rating for the recipe using a JS function *@
+                                <div id=@(cardId) style="display: inline-flex; color: #f4a460; font-size: 28px">
+                                    <script>
+                                        @* Ran into problems using the cardId as a razor variable : @cardId  
+                                         SO, the fix was to create a JS variable inside of the script tag to  
+                                         pass to starRating function *@ 
+                                        var cardID = "cardRating" + @iteration;
+                                        starRating(@recipe.RecipeRating, cardID);
+                                    </script>
+                                </div>
+
                                 <p class="card-text" style="line-height: 1em;">
                                     <em>@recipe.RecipeDescShort</em>
                                 </p>
@@ -88,7 +108,5 @@
             </div>
         </div>
     </div>
-
 </div>
 </body>
-</html>

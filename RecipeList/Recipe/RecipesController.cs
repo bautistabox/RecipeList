@@ -80,7 +80,9 @@ namespace RecipeList.Recipe
                     RecipeInstruction = recipe.Instruction,
                     RecipePhoto = recipe.Photo,
                     RecipeCreatedDate = recipe.CreatedAt,
-                    RecipeUpdatedDate = recipe.UpdatedAt
+                    RecipeUpdatedDate = recipe.UpdatedAt,
+                    RecipeRating = _db.RecipeRatings.Where(rr => rr.RecipeId == recipe.Id).Select(rr => rr.Rating)
+                        .FirstOrDefault()
                 };
 
                 if (recipeItem.RecipePhoto != null)
@@ -104,6 +106,7 @@ namespace RecipeList.Recipe
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             ViewData["allCategories"] = allDbCategories;
+            ViewData["currentSearch"] = model.SearchQuery;
 
             return View("Index", recipeItems);
         }
@@ -128,9 +131,11 @@ namespace RecipeList.Recipe
                     RecipeInstruction = recipe.Instruction,
                     RecipePhoto = recipe.Photo,
                     RecipeCreatedDate = recipe.CreatedAt,
-                    RecipeUpdatedDate = recipe.UpdatedAt
+                    RecipeUpdatedDate = recipe.UpdatedAt,
+                    RecipeRating = _db.RecipeRatings.Where(rr => rr.RecipeId == recipe.Id).Select(rr => rr.Rating)
+                        .FirstOrDefault()
                 };
-
+                
                 if (recipeItem.RecipePhoto != null)
                 {
                     recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
@@ -182,7 +187,9 @@ namespace RecipeList.Recipe
                     RecipeInstruction = recipe.Instruction,
                     RecipePhoto = recipe.Photo,
                     RecipeCreatedDate = recipe.CreatedAt,
-                    RecipeUpdatedDate = recipe.UpdatedAt
+                    RecipeUpdatedDate = recipe.UpdatedAt,
+                    RecipeRating = _db.RecipeRatings.Where(rr => rr.RecipeId == recipe.Id).Select(rr => rr.Rating)
+                        .FirstOrDefault()
                 };
 
                 if (recipeItem.RecipePhoto != null)
@@ -206,6 +213,8 @@ namespace RecipeList.Recipe
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             ViewData["allCategories"] = allDbCategories;
+            ViewData["currentSearch"] =
+                _db.Categories.Where(c => c.Id == categoryId).Select(c => c.Name).FirstOrDefault();
 
             return View("Index", recipeItems);
         }
@@ -227,9 +236,11 @@ namespace RecipeList.Recipe
                     RecipeInstruction = r.Instruction,
                     RecipePhoto = r.Photo,
                     RecipeCreatedDate = r.CreatedAt,
-                    RecipeUpdatedDate = r.UpdatedAt
-                }).OrderBy(x => Guid.NewGuid()).Take(6).ToList();
-
+                    RecipeUpdatedDate = r.UpdatedAt,
+                    RecipeRating = _db.RecipeRatings.Where(rr => rr.RecipeId == r.Id).Select(rr => rr.Rating)
+                        .FirstOrDefault()
+                }).OrderBy(x => Guid.NewGuid()).Take(12).ToList();
+                
             foreach (var mod in model)
             {
                 if (mod.RecipePhoto != null)

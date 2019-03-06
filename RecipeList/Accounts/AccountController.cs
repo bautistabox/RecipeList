@@ -348,6 +348,7 @@ namespace RecipeList.Accounts
 
         [Authorize]
         [HttpGet]
+        [Route("account/profile")]
         public IActionResult Profile()
         {
             var dbUser = _db.Users.FirstOrDefault(u => u.Id == HttpContext.Session.GetInt32("_Userid"));

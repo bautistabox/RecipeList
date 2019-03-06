@@ -13,9 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-JAW99MJVpJBGcbzEuXk4Az05s/XyDdBomFqNlM3ic+I=" crossorigin="anonymous"></script>
     <style>
-        .checked {
-            color: orange;
-        }
+        .checked { color: orange; }
     </style>
     <title>@Model.Recipe.Name</title>
 </head>
@@ -23,13 +21,16 @@
 <body>
 <div class="card" style="background-color: transparent">
     <div align="center" class="card-header" style="background: #f0ead6">
-        <h1 class="display-4">@Model.Recipe.Name</h1>
-        <b>Category: </b><a href="/recipes/search/category/@Model.Category.Id">@Model.Category.Name</a>
         @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
         {
-            <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info" style="float: right">Edit</a>
+            <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit Recipe</a><br/>
         }
-        <em style="float: left">
+        <h1 class="display-4" style="display: inline-block">@Model.Recipe.Name</h1>
+        <br/>
+        <b>Category: </b><a href="/recipes/search/category/@Model.Category.Id">@Model.Category.Name</a>
+
+        <br/>
+        <em>
             <b>Submitted by: <a href="/account/user/@Model.Recipe.UploaderId">@RecipeOwner</a></b>
         </em>
         <div>
@@ -163,24 +164,24 @@
         </div>
     </div>
 </div>
-<form id="hiddenForm" action="/recipes/submit-rating" method="post"> 
+<form id="hiddenForm" action="/recipes/submit-rating" method="post">
     <input hidden="true" value="" name="rating" id="rating"/>
     <input hidden="true" value="@Model.Recipe.Id" name="rId"/>
     <input hidden="true" value="@Model.CurrentUser" name="currentUser"/>
-    </form>
+</form>
 
 <script>
-    function add(ths,sno) {
+    function add(ths, sno) {
 
         document.getElementById("rating").value = sno + 1;
         document.getElementById("hiddenForm").submit();
-        
-        for (var i=0;i<=4;i++) {
+
+        for (var i = 0; i <= 4; i++) {
             var cur = document.getElementById("star" + i);
             cur.className = "fa fa-star";
         }
 
-        for (var i=0;i<=sno;i++) {
+        for (var i = 0; i <= sno; i++) {
             var cur = document.getElementById("star" + i);
             if (cur.className === "fa fa-star");
             {
@@ -191,4 +192,3 @@
     }
 </script>
 </body>
-

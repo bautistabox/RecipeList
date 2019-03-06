@@ -15,5 +15,6 @@ namespace RecipeList.Recipe
         public DateTime RecipeUpdatedDate { get; set; }
         public byte[] RecipePhoto { get; set; }
         public string RecipePhoto64 { get; set; }
+        public int RecipeRating { get; set; }
     }
 }
