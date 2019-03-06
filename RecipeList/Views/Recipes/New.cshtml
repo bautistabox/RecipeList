@@ -176,12 +176,6 @@
         $("#add-recipe").click(function() {
             var tbl = document.getElementById("myTable");
 
-            var tblIngredients = new Array();
-            var tblAmounts = new Array();
-            var tblAmountTypes = new Array();
-
-            var dataList = new Array();
-
             @* Getting Values from Rows in Ingredient Table *@
             for (var i = 1; i < tbl.rows.length; i++) {
                 var ingredientName = tbl.rows[i].cells[0].innerHTML;

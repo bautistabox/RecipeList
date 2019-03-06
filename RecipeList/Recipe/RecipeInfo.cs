@@ -12,7 +12,8 @@ namespace RecipeList.Recipe
         public Category Category { get; set; }
         public List<Category> Categories { get; set; }
         public List<string> IngredientsList { get; set; }
-        
+        public int Rating { get; set; }
+        public int RatingCount { get; set; }
         public Int32 CurrentUser { get; set; }
         
         public string Image { get; set; }

@@ -7,102 +7,20 @@
     var recipes = (List<Recipe>)ViewData["Recipes"];
 }
 <script src="https://unpkg.com/ionicons@4.4.4/dist/ionicons.js"></script>
-
+<script src="~/js/rating.js"></script>
 
 <div class="card" style="padding: 15px; width: inherit">
     <div class="row">
         <div class="col-md-12">
             <div>
                 <h4>
-                    Welcome to RecipeList, @Model.DisplayName
+                    Welcome to @Model.DisplayName's profile
                 </h4>
-                <h6>
-                    <em>Username: @Model.Username</em>
-                </h6>
                 <div style="display: inline-block">
                     Average Recipe Rating :
-                    @{
-                        switch (@Model.Rating)
-                        {
-                            case 0:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 1:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 2:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 3:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 4:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 5:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            default:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                        }
-                    }
+                    <div id="avgRecipeRating" style="display: inline-flex; color: #f4a460; font-size: 20px">
+                        <script>starRating(@Model.Rating, "avgRecipeRating");</script>
+                    </div>
                     <br/><br/>
                 </div>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -143,7 +61,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <label>Your Bio</label><br/>
+                            <label>Bio</label><br/>
                             <p>
                                 <em>@Model.Bio</em>
                             </p>

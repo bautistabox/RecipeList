@@ -578,10 +578,55 @@ namespace RecipeList.Recipe
                 commentInfoList.Add(commentInfo);
             }
 
+            var rating = 0;
+            var dbRating = _db.RecipeRatings.Where(r => r.RecipeId == recipeInfo.Recipe.Id).ToList();
+            recipeInfo.RatingCount = dbRating.Count;
+            if (dbRating.Count > 0)
+            {
+                foreach (var rate in dbRating)
+                {
+                    rating += rate.Rating;
+                }
+
+                recipeInfo.Rating = rating / recipeInfo.RatingCount;
+            }
+            else
+            {
+                recipeInfo.Rating = rating;
+            }
+
+            
+
             ViewData["CommentInfo"] = commentInfoList;
             ViewData["RecipeOwner"] = _db.Users.FirstOrDefault(u => u.Id == recipeInfo.Recipe.UploaderId).DisplayName;
 
             return View(recipeInfo);
+        }
+
+        [HttpPost]
+        [Route("recipes/submit-rating")]
+        public IActionResult SubmitRating(int rating, int currentUser, int rId)
+        {
+            var dbRating = _db.RecipeRatings.FirstOrDefault(rr => rr.UserId == currentUser && rr.RecipeId == rId);
+            if (dbRating == null)
+            {
+                var newRating = new RecipeRating
+                {
+                    Rating = rating,
+                    RecipeId = rId,
+                    UserId = currentUser
+                };
+
+                _db.RecipeRatings.Add(newRating);
+            }
+            else
+            {
+                dbRating.Rating = rating;
+            }
+            
+            _db.SaveChanges();
+            
+            return RedirectToAction("Page", new {recipeId = rId});
         }
     }
 }

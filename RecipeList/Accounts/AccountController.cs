@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
 using RecipeList.Authentication;
+using RecipeList.Recipe;
 
 namespace RecipeList.Accounts
 {
@@ -404,6 +405,30 @@ namespace RecipeList.Accounts
            
             return View(model);
         }
+
+        [HttpPost]
+        [Route("/account/profile/update")]
+        public IActionResult UpdateProfile(string updatedDisplayName, string updatedBio, int id)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return RedirectToAction("Profile");
+            }
+
+            var bio = _db.UserBios.FirstOrDefault(ub => ub.UserId == user.Id);
+            if (bio == null)
+            {
+                return RedirectToAction("Profile");
+            }
+
+            user.DisplayName = updatedDisplayName;
+            bio.Bio = updatedBio;
+            _db.SaveChanges();
+            
+            return RedirectToAction("Profile");
+        }
+        
 
         [HttpGet]
         public IActionResult NoneFound()

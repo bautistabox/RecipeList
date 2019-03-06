@@ -8,6 +8,18 @@
     var commentInfo = (List<CommentInfo>) ViewData["CommentInfo"];
     var RecipeOwner = (string) ViewData["RecipeOwner"];
 }
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-JAW99MJVpJBGcbzEuXk4Az05s/XyDdBomFqNlM3ic+I=" crossorigin="anonymous"></script>
+    <style>
+        .checked {
+            color: orange;
+        }
+    </style>
+    <title>@Model.Recipe.Name</title>
+</head>
+
 <body>
 <div class="card" style="background-color: transparent">
     <div align="center" class="card-header" style="background: #f0ead6">
@@ -16,7 +28,36 @@
         @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
         {
             <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info" style="float: right">Edit</a>
-        }<em style="float:left"><b>Submitted by: <a href="/account/user/@Model.Recipe.UploaderId">@RecipeOwner</a></b></em>
+        }
+        <em style="float: left">
+            <b>Submitted by: <a href="/account/user/@Model.Recipe.UploaderId">@RecipeOwner</a></b>
+        </em>
+        <div>
+            @for (var i = 0; i < 5; i++)
+            {
+                var idString = ("star" + @i.ToString());
+                if (i < @Model.Rating)
+                {
+                    <text>
+                        <span class="fa fa-star checked" id=@idString onclick="add(this, @i)"></span>
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        <span class="fa fa-star" id=@idString onclick="add(this, @i)"></span>
+                    </text>
+                }
+            }
+            @if (@Model.RatingCount == 1)
+            {
+                <span>@Model.RatingCount Rating</span>
+            }
+            else
+            {
+                <span>@Model.RatingCount Ratings</span>
+            }
+        </div>
     </div>
     <div class="card-body" align="center">
         <div style="width: 75%">
@@ -102,7 +143,9 @@
                             {
                                 <div class="card" align="left">
                                     <div class="card-header" style="line-height: .05em">
-                                        <b><a href="/account/user/@comment.CommentObj.UserId">@comment.Commenter:</a></b>
+                                        <b>
+                                            <a href="/account/user/@comment.CommentObj.UserId">@comment.Commenter:</a>
+                                        </b>
                                     </div>
                                     <div class="card-body">
                                         @comment.CommentObj.CommentText
@@ -120,4 +163,32 @@
         </div>
     </div>
 </div>
+<form id="hiddenForm" action="/recipes/submit-rating" method="post"> 
+    <input hidden="true" value="" name="rating" id="rating"/>
+    <input hidden="true" value="@Model.Recipe.Id" name="rId"/>
+    <input hidden="true" value="@Model.CurrentUser" name="currentUser"/>
+    </form>
+
+<script>
+    function add(ths,sno) {
+
+        document.getElementById("rating").value = sno + 1;
+        document.getElementById("hiddenForm").submit();
+        
+        for (var i=0;i<=4;i++) {
+            var cur = document.getElementById("star" + i);
+            cur.className = "fa fa-star";
+        }
+
+        for (var i=0;i<=sno;i++) {
+            var cur = document.getElementById("star" + i);
+            if (cur.className === "fa fa-star");
+            {
+                cur.className = "fa fa-star checked";
+            }
+        }
+
+    }
+</script>
 </body>
+

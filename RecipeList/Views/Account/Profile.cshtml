@@ -1,13 +1,31 @@
+@using RecipeList.Accounts
+@using RecipeList.Recipe
 @using RecipeList.Recipes
 @model RecipeList.Accounts.ProfileViewModel;
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
-    var recipes = (List<Recipe>)ViewData["Recipes"];
+    var recipes = (List<Recipe>) ViewData["Recipes"];
 }
 <script src="https://unpkg.com/ionicons@4.4.4/dist/ionicons.js"></script>
+<script src="~/js/rating.js"></script>
 
+<script type="text/javascript"></script>
+<script>
+    function editable(displayNameVal, bioVal) {
+        var displayName = document.getElementById("editableDisplayName");
+        var bio = document.getElementById("editableBio");
+        document.getElementById("saveBtn").hidden = false;
+        displayName.innerHTML = "<input type=\"text\" class=\"form-control\" value=\"" +
+            displayNameVal +
+            "\" name=\"updatedDisplayName\"/>";
+        bio.innerHTML = "<textarea class=\"form-control\" rows=\"4\" cols=\"100\" name=\"updatedBio\">" +
+            bioVal +
+            "</textarea>";
+
+    }
+</script>
 
 <div class="card" style="padding: 15px; width: inherit">
     <div class="row">
@@ -16,7 +34,7 @@
                 <div class="btn btn-group shadow-lg" style="padding: 0px;">
                     <a class="btn btn-info" style="color: #fff" href="/recipes/user/@Model.UserId">My Recipes</a>
                     <a class="btn btn-info" style="color: #fff" href="/shopping/lists">Shopping Lists</a>
-                    @* <button class="btn btn-info" id="editBtn">Edit Profile</button> *@
+                    <input type="button" class="btn btn-info" id="editBtn" value="Edit Profile" onclick="editable('@Model.DisplayName', '@Model.Bio')"/>
                 </div>
             </div>
             <div>
@@ -28,88 +46,9 @@
                 </h6>
                 <div style="display: inline-block">
                     Average Recipe Rating :
-                    @{
-                        switch (@Model.Rating)
-                        {
-                            case 0:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 1:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 2:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 3:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 4:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            case 5:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                        <ion-icon name="star"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                            default:
-                                <text>
-                                    <div style="display: inline-flex; color: #f4a460; font-size: 20px">
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                        <ion-icon name="star-outline"></ion-icon>
-                                    </div>
-                                </text>
-                                break;
-                        }
-                    }
+                    <div id="avgRecipeRating" style="display: inline-flex; color: #f4a460; font-size: 20px">
+                        <script>starRating(@Model.Rating, "avgRecipeRating");</script>
+                    </div>
                     <br/><br/>
                 </div>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -138,24 +77,28 @@
                             </p>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label>Display Name</label>
+                    <form method="post" action="/account/profile/update">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Display Name</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p id="editableDisplayName">
+                                    <em>@Model.DisplayName</em>
+                                </p>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <p>
-                                <em>@Model.DisplayName</em>
-                            </p>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Bio</label><br/>
+                                <p id="editableBio">
+                                    <em>@Model.Bio</em>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label>Your Bio</label><br/>
-                            <p>
-                                <em>@Model.Bio</em>
-                            </p>
-                        </div>
-                    </div>
+                        <input type="hidden" name="id" value="@Model.UserId"/>
+                        <input type="submit" class="btn btn-info shadow-sm" id="saveBtn" hidden="true" value="Save"/>
+                    </form>
                 </div>
                 <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                     <br/>
@@ -189,9 +132,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @for(var i = 0; i < recipes.Count; i++)
+                                @for (var i = 0; i < recipes.Count; i++)
                                 {
-                                    <tr><td>@(i+1)</td><td><a href="/recipes/page/@recipes[i].Id">@recipes[i].Name</a></td></tr>
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>
+                                            <a href="/recipes/page/@recipes[i].Id">@recipes[i].Name</a>
+                                        </td>
+                                    </tr>
                                 }
                                 </tbody>
                             </table>
