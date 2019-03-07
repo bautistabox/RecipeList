@@ -458,11 +458,20 @@ namespace RecipeList.Accounts
             var bio = _db.UserBios.FirstOrDefault(ub => ub.UserId == user.Id);
             if (bio == null)
             {
-                return RedirectToAction("Profile");
+                var newBio = new UserBio
+                {
+                    Bio = updatedBio,
+                    UserId = user.Id
+                };
+
+                _db.UserBios.Add(newBio);
+            }
+            else
+            {
+                bio.Bio = updatedBio;
             }
 
             user.DisplayName = updatedDisplayName;
-            bio.Bio = updatedBio;
             _db.SaveChanges();
             
             return RedirectToAction("Profile");
