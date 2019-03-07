@@ -18,11 +18,11 @@ namespace RecipeList
         public DbSet<UniqueIdentifiers> UniqueIdentifiers { get; set; }
         public DbSet<ListItem> ListItems { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Recipes.Recipe> Recipes { get; set; }
+        public DbSet<Recipe.Recipe> Recipes { get; set; }
         public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
         public DbSet<UserBio> UserBios { get; set; }
         public DbSet<RecipeRating> RecipeRatings { get; set; }
-        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Comment.Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

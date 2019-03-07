@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using RecipeList.Accounts;
+using RecipeList.Recipe;
 using RecipeList.Recipes;
-using RecipeList.Shopping;
-
-namespace RecipeList.Accounts
+namespace RecipeList.Admin
 {
     public class AdminController : Controller
     {
@@ -28,11 +25,11 @@ namespace RecipeList.Accounts
                 return RedirectToAction("Login", "Account");
             }
 
-            var categoriesList = new CategoriesList();
+            var categoriesList = new List<Category>();
 
             foreach (var category in _db.Categories)
             {
-                categoriesList.Categories.Add(category);
+                categoriesList.Add(category);
             }
 
             return View(categoriesList);

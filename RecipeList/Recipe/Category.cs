@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RecipeList.Recipes
+namespace RecipeList.Recipe
 {
     [Table("categories")]   
     public class Category

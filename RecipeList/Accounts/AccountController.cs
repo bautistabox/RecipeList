@@ -141,13 +141,13 @@ namespace RecipeList.Accounts
             const string fromName = "RecipeList";
             const string subject = "RecipeList Password Recovery";
             var linkId = Guid.NewGuid();
-            var unique_identifier = new UniqueIdentifiers
+            var uniqueIdentifier = new UniqueIdentifiers
             {
                 UserId = user.Id,
                 UniqueId = linkId,
                 IsVerified = false
             };
-            _db.UniqueIdentifiers.Add(unique_identifier);
+            _db.UniqueIdentifiers.Add(uniqueIdentifier);
             _db.SaveChanges();
 
             var body = "Hello " + user.DisplayName +
@@ -252,6 +252,10 @@ namespace RecipeList.Accounts
         public IActionResult Verify(int id, Guid uniqueId)
         {
             var dbEmailVer = _db.UniqueIdentifiers.FirstOrDefault(e => e.UserId == id);
+            if (dbEmailVer == null)
+            {
+                return View("Login");
+            }
             if (dbEmailVer.IsVerified)
             {
                 return View("ExpiredEmailVerifyView");
@@ -296,6 +300,10 @@ namespace RecipeList.Accounts
             }
 
             var dbEmailVer = _db.UniqueIdentifiers.FirstOrDefault(e => e.UserId == dbUser.Id);
+            if (dbEmailVer == null)
+            {
+                return View("Login");
+            }
             if (!dbEmailVer.IsVerified)
             {
                 ModelState.AddModelError("Username", "The specified user has not yet verified their email");
@@ -366,7 +374,11 @@ namespace RecipeList.Accounts
 
                 avgRating = avgRating / dbUserRatings.Count;
             }
-            
+
+            if (dbUser == null)
+            {
+                return View("/");
+            }
             var model = new ProfileViewModel
             {
                 DisplayName = dbUser.DisplayName,

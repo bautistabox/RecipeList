@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -102,7 +101,11 @@ namespace RecipeList.Shopping
         public IActionResult Create(IngredientListInputModel model)
         {
             var dbRecipe = _db.Recipes.FirstOrDefault(r => r.Id == model.RecipeId);
-
+            if (dbRecipe == null)
+            {
+                return View("New");
+            }
+            
             var shoppingList = new ShoppingList
             {
                 Name = dbRecipe.Name,
@@ -160,9 +163,11 @@ namespace RecipeList.Shopping
                 .Where(l => l.ListId == model.listId)
                 .Select(i => i.ItemName)
                 .ToList();
-
-            model.listItems = items.ToArray();
-
+            if (model != null)
+            {
+                model.listItems = items.ToArray();
+            }
+            
             return View(model);
         }
 
@@ -189,8 +194,10 @@ namespace RecipeList.Shopping
                 .Select(i => i.ItemName)
                 .ToList();
 
-
-            model.listItems = items.ToArray();
+            if (model != null)
+            {
+                model.listItems = items.ToArray();
+            }
 
             var dupeList = new List<string>();
             foreach (var item in _db.ListItems.ToList())

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using RecipeList.Authentication;
+using RecipeList.Comment;
 using RecipeList.Recipes;
 
 namespace RecipeList.Recipe
@@ -41,14 +42,14 @@ namespace RecipeList.Recipe
             }
 
             // use the recipe_ingredients recipe_id to select more recipes that include that ingredient
-            var RecipeIds = new List<int>();
+            var recipeIds = new List<int>();
             foreach (var recipeIngredient in dbRecipeIngredients)
             {
-                RecipeIds.Add(recipeIngredient.RecipeId);
+                recipeIds.Add(recipeIngredient.RecipeId);
             }
 
             // add them to the recipes that use the search term in their name
-            foreach (var id in RecipeIds)
+            foreach (var id in recipeIds)
             {
                 var flag = false;
                 foreach (var recipe in dbRecipes)
@@ -69,6 +70,10 @@ namespace RecipeList.Recipe
             foreach (var recipe in dbRecipes)
             {
                 var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
+                if (recipeOwner == null)
+                {
+                    return View("Index");
+                }
 
                 var recipeItem = new RecipeItems
                 {
@@ -120,6 +125,10 @@ namespace RecipeList.Recipe
             foreach (var recipe in dbRecipes)
             {
                 var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
+                if (recipeOwner == null)
+                {
+                    return View("Index");
+                }
 
                 var recipeItem = new RecipeItems
                 {
@@ -135,7 +144,7 @@ namespace RecipeList.Recipe
                     RecipeRating = _db.RecipeRatings.Where(rr => rr.RecipeId == recipe.Id).Select(rr => rr.Rating)
                         .FirstOrDefault()
                 };
-                
+
                 if (recipeItem.RecipePhoto != null)
                 {
                     recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
@@ -157,10 +166,10 @@ namespace RecipeList.Recipe
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             ViewData["allCategories"] = allDbCategories;
-            
+
             return View("Index", recipeItems);
         }
-        
+
         [HttpGet]
         [Route("recipes/search/category/{categoryId}")]
         public IActionResult SearchCategories(int categoryId)
@@ -176,6 +185,10 @@ namespace RecipeList.Recipe
             foreach (var recipe in dbRecipes)
             {
                 var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipe.UploaderId);
+                if (recipeOwner == null)
+                {
+                    return View("Index");
+                }
 
                 var recipeItem = new RecipeItems
                 {
@@ -237,7 +250,7 @@ namespace RecipeList.Recipe
                     RecipeRating = _db.RecipeRatings.Where(rr => rr.RecipeId == r.Id).Select(rr => rr.Rating)
                         .FirstOrDefault()
                 }).OrderBy(x => Guid.NewGuid()).Take(12).ToList();
-                
+
             foreach (var mod in model)
             {
                 if (mod.RecipePhoto != null)
@@ -268,7 +281,7 @@ namespace RecipeList.Recipe
         {
             var sessionUId = HttpContext.Session.GetInt32("_Userid");
             var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
-            
+
             // this block will grab the recipe items, only this user has entered before
             if (user != null)
             {
@@ -278,8 +291,8 @@ namespace RecipeList.Recipe
                         .Select(ri => ri.IngredientId).ToList();
                 var ingredients = _db.Ingredients.Where(i => recipeIngredientsIds.Contains(i.Id)).ToList();
                 ViewData["ingredients"] = ingredients;
+            }
 
-            }      
             var dbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             return View();
@@ -358,18 +371,25 @@ namespace RecipeList.Recipe
         {
             var category = _db.Categories.SingleOrDefault(c => c.Name == model.Category);
             int categoryId;
-            
+
             var dbRecipe = _db.Recipes.SingleOrDefault(r => r.Id == model.RecipeId);
             if (dbRecipe == null)
             {
                 return RedirectToAction("Index");
             }
+
+//            category == null ? categoryId = dbRecipe.CategoryId : categoryId = category.Id;
+            
             if (category == null)
             {
                 categoryId = dbRecipe.CategoryId;
             }
+            else
+            {
+                categoryId = category.Id;
+            }
 
-            categoryId = category.Id;
+            
             dbRecipe.Name = model.Name;
             dbRecipe.Description = model.Description;
             dbRecipe.Instruction = model.Instruction;
@@ -432,14 +452,14 @@ namespace RecipeList.Recipe
                 _db.SaveChanges();
             }
 
-            return RedirectToAction("Page",new {recipeId = dbRecipe.Id} );
+            return RedirectToAction("Page", new {recipeId = dbRecipe.Id});
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Process(RecipeInputModel model)
         {
             var sessionUId = HttpContext.Session.GetInt32("_Userid");
-            var sessionUName = HttpContext.Session.GetString("_Username");
 
             var catId = _db.Categories.First(u => u.Name == model.Category).Id;
             var size = model.Photo.Length;
@@ -452,7 +472,7 @@ namespace RecipeList.Recipe
                 }
             }
 
-            var recipe = new Recipes.Recipe
+            var recipe = new Recipe
             {
                 Name = model.Name,
                 Description = model.Description,
@@ -513,7 +533,10 @@ namespace RecipeList.Recipe
             _db.SaveChanges();
 
             var deleteRecipe = _db.Recipes.FirstOrDefault(d => d.Id == model.DeleteRecipeId);
-            _db.Recipes.Remove(deleteRecipe);
+            if (deleteRecipe != null)
+            {
+                _db.Recipes.Remove(deleteRecipe);
+            }
 
             _db.SaveChanges();
             return RedirectToAction("Index");
@@ -531,6 +554,11 @@ namespace RecipeList.Recipe
             recipeInfo.Recipe = _db.Recipes.FirstOrDefault(r => r.Id == recipeId);
             recipeInfo.CurrentUser = HttpContext.Session.GetInt32("_Userid").Value;
 
+            if (recipeInfo.Recipe == null)
+            {
+                return View("Index");
+            }
+            
             if (recipeInfo.Recipe.Photo != null)
             {
                 recipeInfo.Image = Convert.ToBase64String(recipeInfo.Recipe.Photo);
@@ -571,7 +599,7 @@ namespace RecipeList.Recipe
 
             for (var i = 0; i < recipeInfo.Ingredients.Count; i++)
             {
-                string fullIngredient = "";
+                var fullIngredient = "";
                 if (recipeInfo.RecipeIngredients[i].Amount != "N/A")
                 {
                     fullIngredient = recipeInfo.RecipeIngredients[i].Amount + " ";
@@ -585,17 +613,22 @@ namespace RecipeList.Recipe
                 recipeInfo.IngredientsList.Add(fullIngredient);
             }
 
-            var comments = _db.Comments.Where(c => c.RecipeId == recipeInfo.Recipe.Id).OrderByDescending(u => u.CreatedAt).ToList();
+            var comments = _db.Comments.Where(c => c.RecipeId == recipeInfo.Recipe.Id)
+                .OrderByDescending(u => u.CreatedAt).ToList();
             var commentInfoList = new List<CommentInfo>();
             foreach (var comment in comments)
             {
-                var commentInfo = new CommentInfo
+                var user = _db.Users.FirstOrDefault(u => u.Id == comment.UserId);
+                if (user != null)
                 {
-                    CommentObj = comment,
-                    Commenter = _db.Users.FirstOrDefault(u => u.Id == comment.UserId).DisplayName
-                };
-                
-                commentInfoList.Add(commentInfo);
+                    var commentInfo = new CommentInfo
+                    {
+                        CommentObj = comment,
+                        Commenter = user.DisplayName
+                    };
+
+                    commentInfoList.Add(commentInfo);
+                }
             }
 
             var rating = 0;
@@ -615,11 +648,13 @@ namespace RecipeList.Recipe
                 recipeInfo.Rating = rating;
             }
 
-            
 
             ViewData["CommentInfo"] = commentInfoList;
-            ViewData["RecipeOwner"] = _db.Users.FirstOrDefault(u => u.Id == recipeInfo.Recipe.UploaderId).DisplayName;
-
+            var recipeOwner = _db.Users.FirstOrDefault(u => u.Id == recipeInfo.Recipe.UploaderId);
+            if(recipeOwner != null)
+            {
+                ViewData["RecipeOwner"] = recipeOwner.DisplayName;
+            }
             return View(recipeInfo);
         }
 
@@ -643,9 +678,9 @@ namespace RecipeList.Recipe
             {
                 dbRating.Rating = rating;
             }
-            
+
             _db.SaveChanges();
-            
+
             return RedirectToAction("Page", new {recipeId = rId});
         }
     }

@@ -30,9 +30,9 @@ namespace RecipeList
             });
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IEmailSender, EmailSender>();
-            var connection = @"Server=localhost;Database=RecipesLists;Trusted_Connection=True;";
+//            var connection = @"Server=localhost;Database=RecipesLists;Trusted_Connection=True;";
             services.AddDbContext<RecipesDbContext>
-                (options => options.UseSqlServer(connection));
+                (options => options.UseSqlServer(Configuration.GetConnectionString("RecipesLists")));
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
@@ -53,11 +53,8 @@ namespace RecipeList
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
             app.UseCookiePolicy();

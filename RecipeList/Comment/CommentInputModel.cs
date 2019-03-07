@@ -1,4 +1,4 @@
-namespace RecipeList.Recipe
+namespace RecipeList.Comment
 {
     public class CommentInputModel
     {

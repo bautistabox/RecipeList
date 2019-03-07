@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace RecipeList.Recipe
+namespace RecipeList.Comment
 {
     public class CommentsController : Controller
     {

@@ -14,15 +14,15 @@ namespace RecipeList.Accounts
                 const string fromPassword = "Password1@3";
                 var fromAddr = new MailAddress(from, fromName, System.Text.Encoding.UTF8);
                 var toAddr = new MailAddress(to, toName, System.Text.Encoding.UTF8);
-                var smtp = new SmtpClient
+                using (var smtp = new SmtpClient
                 {
                     Port = 587,
                     Host = "smtp.gmail.com",
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-                };
+                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)                 
+                })
 
                 using (var message = new MailMessage(fromAddr, toAddr)
                 {

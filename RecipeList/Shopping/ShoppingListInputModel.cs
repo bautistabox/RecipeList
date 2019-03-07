@@ -1,4 +1,3 @@
-
 namespace RecipeList.Shopping
 {
     public class ShoppingListInputModel

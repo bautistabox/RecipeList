@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RecipeList.Recipe
+namespace RecipeList.Comment
 {
     [Table("comments")]
     public class Comment
