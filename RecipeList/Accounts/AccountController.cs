@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Win32;
 using RecipeList.Authentication;
 using RecipeList.Recipe;
@@ -122,12 +123,18 @@ namespace RecipeList.Accounts
 
         [HttpPost]
         [Route("account/forgot/password")]
-        public IActionResult ProcessForgotPassword(string email)
+        public IActionResult ProcessForgotPassword(ForgotCredentialsViewModel model)
         {
-            var user = _db.Users.FirstOrDefault(u => u.Email == email);
+            if (!ModelState.IsValid)
+            {
+                return View("ForgotPassword");
+            }
+            
+            var user = _db.Users.FirstOrDefault(u => u.Email == model.Email);
             if (user == null)
             {
-                return RedirectToAction("ForgotPassword");
+                ModelState.AddModelError("Email", "That Email doesn't exist");
+                return View("ForgotPassword");
             }
 
             const string from = "infinity.test.email@gmail.com";
@@ -147,18 +154,31 @@ namespace RecipeList.Accounts
                        ",<br/><br/>Click this <a href='https://localhost:5001/account/recovery/" + user.Id + "/" +
                        linkId + "'>link</a> to reset your password.";
             _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
-            return RedirectToAction("Login");
+            return RedirectToAction("CheckEmail");
+        }
+
+        [HttpGet]
+        [Route("account/check-email")]
+        public IActionResult CheckEmail()
+        {
+            return View();
         }
 
         [HttpPost]
         [Route("account/forgot/username")]
-        public IActionResult ProcessForgotUsername(string email)
+        public IActionResult ProcessForgotUsername(ForgotCredentialsViewModel model)
         {
-            var user = _db.Users.FirstOrDefault(u => u.Email == email);
-
+            if (!ModelState.IsValid)
+            {
+                return View("ForgotUsername");
+            }
+            var user = _db.Users.FirstOrDefault(u => u.Email == model.Email);
+            
+            
             if (user == null)
             {
-                return RedirectToAction("ForgotUsername");
+                ModelState.AddModelError("Email", "That Email doesn't exist");
+                return View("ForgotUsername");
             }
 
             const string from = "infinity.test.email@gmail.com";
@@ -175,20 +195,33 @@ namespace RecipeList.Accounts
         [Route("account/recovery/{id}/{uniqueId}")]
         public IActionResult Recovery(int id, Guid uniqueId)
         {
-            var dbUniqueId = _db.UniqueIdentifiers.FirstOrDefault(u => uniqueId == uniqueId);
-            if (dbUniqueId == null)
+            var dbUniqueId = _db.UniqueIdentifiers.FirstOrDefault(u => u.UniqueId == uniqueId);
+            if (dbUniqueId == null || dbUniqueId.IsVerified)
             {
                 return RedirectToAction("Login");
             }
 
-            dbUniqueId.IsVerified = true;
             ViewData["user"] = id;
+            ViewData["uniqueId"] = uniqueId;
             return View("Recovery");
         }
 
         [HttpPost]
-        public IActionResult Recover(string firstPassword, int user)
+        [Route("account/recover/{id}/{uniqueId}")]
+        public IActionResult Recover(ForgotPasswordViewModel model, int user, Guid uniqueIdInput)
         {
+            ViewData["user"] = user;
+            ViewData["uniqueId"] = uniqueIdInput;
+            if (!ModelState.IsValid)
+            {
+                return View("Recovery");
+            }
+
+            if (!model.PasswordOne.Equals(model.PasswordTwo))
+            {
+                ModelState.AddModelError("PasswordOne", "Passwords do not match.");
+                return View("Recovery");
+            }
             var dbUser = _db.Users.FirstOrDefault(u => u.Id == user);
 
             if (dbUser == null)
@@ -196,9 +229,14 @@ namespace RecipeList.Accounts
                 return RedirectToAction("Login");
             }
 
-            dbUser.Password = _passwordHasher.HashPassword(firstPassword);
+            dbUser.Password = _passwordHasher.HashPassword(model.PasswordOne);
+            var uniqueIdentifier = _db.UniqueIdentifiers.FirstOrDefault(ui => ui.UniqueId == uniqueIdInput);
+            if (uniqueIdentifier != null)
+            {
+                uniqueIdentifier.IsVerified = true;
+            }
             _db.SaveChanges();
-
+            
             return RedirectToAction("RecoverySuccess");
         }
 

@@ -1,7 +1,26 @@
+@model RecipeList.Accounts.ForgotCredentialsViewModel
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
+
+<style type="text/css">
+    .field-validation-error { color: #ff0000; }
+
+    .field-validation-valid { display: none; }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid { display: none; }
+</style>
 
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">Recover your username</h2><br/>
@@ -14,6 +33,7 @@
                     and that's okay! Enter your email address below
                     to receive an email including your username.
                 </label><br/><br/>
+                @Html.ValidationSummary()
                 <div class="input-group mb-3">
                     <input type="email" id="inputEmail" class="form-control"
                            name="Email" placeholder="Email Address"/>
