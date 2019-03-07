@@ -266,9 +266,21 @@ namespace RecipeList.Recipe
         [HttpGet]
         public IActionResult New()
         {
-            var dbIngredients = _db.Ingredients.ToList();
+            var sessionUId = HttpContext.Session.GetInt32("_Userid");
+            var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
+            
+            // this block will grab the recipe items, only this user has entered before
+            if (user != null)
+            {
+                var userRecipesIds = _db.Recipes.Where(r => r.UploaderId == user.Id).Select(r => r.Id).ToList();
+                var recipeIngredientsIds =
+                    _db.RecipeIngredients.Where(ri => userRecipesIds.Contains(ri.RecipeId))
+                        .Select(ri => ri.IngredientId).ToList();
+                var ingredients = _db.Ingredients.Where(i => recipeIngredientsIds.Contains(i.Id)).ToList();
+                ViewData["ingredients"] = ingredients;
+
+            }      
             var dbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
-            ViewData["ingredients"] = dbIngredients;
             ViewData["categories"] = dbCategories;
             return View();
         }

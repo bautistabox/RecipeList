@@ -29,7 +29,7 @@ namespace RecipeList.Shopping
                 ListId = i.ListId
             }).ToList();
 
-            return new JsonResult (allItems);
+            return new JsonResult(allItems);
         }
 
         [HttpGet]
@@ -71,19 +71,27 @@ namespace RecipeList.Shopping
         {
             var sessionUName = HttpContext.Session.GetString("_Username");
             var dupeList = new List<string>();
-            foreach (var item in _db.ListItems.ToList())
+            var user = _db.Users.FirstOrDefault(u => u.Username == sessionUName);
+            
+            // this block will grab only the shopping list items this user has enter before
+            if (user != null)
             {
-                var flag = false;
+                var usersLists = _db.Lists.Where(l => l.UserId == user.Id).Select(l => l.Id).ToList();
+                var listItems = _db.ListItems.Where(li => usersLists.Contains(li.ListId)).ToList();
 
-                for (var i = 0; i != dupeList.Count; i++)
-                    if (dupeList[i].Equals(item.ItemName))
-                        flag = true;
+                foreach (var item in listItems)
+                {
+                    var flag = false;
 
-                if (!flag || dupeList.Count == 0)
-                    dupeList.Add(item.ItemName);
+                    for (var i = 0; i != dupeList.Count; i++)
+                        if (dupeList[i].Equals(item.ItemName))
+                            flag = true;
+
+                    if (!flag || dupeList.Count == 0)
+                        dupeList.Add(item.ItemName);
+                }
             }
 
-            
             ViewData["items"] = dupeList;
             ViewData["username"] = sessionUName;
             return View();
@@ -93,9 +101,8 @@ namespace RecipeList.Shopping
         [Route("shopping/create-list")]
         public IActionResult Create(IngredientListInputModel model)
         {
-
             var dbRecipe = _db.Recipes.FirstOrDefault(r => r.Id == model.RecipeId);
-            
+
             var shoppingList = new ShoppingList
             {
                 Name = dbRecipe.Name,
@@ -110,9 +117,9 @@ namespace RecipeList.Shopping
                 .Where(r => r.RecipeId == model.RecipeId)
                 .Select(i => i.IngredientId)
                 .ToArray();
-                
-            
-            foreach(var recipeIngredientId in recipeIngredientIds)
+
+
+            foreach (var recipeIngredientId in recipeIngredientIds)
             {
                 var ingredient = _db.Ingredients
                     .Where(i => i.Id == recipeIngredientId)
@@ -127,7 +134,7 @@ namespace RecipeList.Shopping
 
                 _db.ListItems.Add(listItem);
             }
-            
+
             _db.SaveChanges();
             return RedirectToAction("View", new {listId = shoppingList.Id});
         }
@@ -164,7 +171,7 @@ namespace RecipeList.Shopping
         {
             var sessionUId = HttpContext.Session.GetInt32("_Userid");
             var sessionUName = HttpContext.Session.GetString("_Username");
-            
+
             var model = _db
                 .Lists
                 .Where(u => u.Id == listId)
@@ -184,7 +191,7 @@ namespace RecipeList.Shopping
 
 
             model.listItems = items.ToArray();
-            
+
             var dupeList = new List<string>();
             foreach (var item in _db.ListItems.ToList())
             {
@@ -303,7 +310,7 @@ namespace RecipeList.Shopping
 
             foreach (var listItem in deleteListItems)
                 _db.ListItems.Remove(listItem);
-            
+
             var deleteList = from list in _db.Lists
                 where list.Id == model.listId
                 select list;

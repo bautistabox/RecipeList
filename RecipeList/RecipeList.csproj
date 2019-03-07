@@ -13,6 +13,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.2" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+        <PackageReference Include="typeahead.js-bootstrap.css" Version="0.0.4" />
         <PackageReference Include="WebApiContrib.Formatting.JavaScriptSerializer" Version="0.9.4" />
     </ItemGroup>
 
