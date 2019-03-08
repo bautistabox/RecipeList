@@ -8,7 +8,7 @@ namespace RecipeList.Recipes
     public class RecipeInputModel
     {
         public int RecipeId { get; set; }
-        
+
         [Required]
         [Display(Name = "Recipe Title")]
         public string Name { get; set; }
@@ -27,7 +27,7 @@ namespace RecipeList.Recipes
 
         [Display(Name = "Optional - Post a photo of your dish")]
         public IFormFile Photo { get; set; }
-        
+
         public IList<IngredientInfo> Ingredients { get; set; }
     }
 }

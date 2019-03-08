@@ -1,19 +1,12 @@
 @model RecipeList.Shopping.ShoppingListItems
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>View Shopping List</title>
-</head>
-<body>
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
 <div align="center" style="padding: 5%">
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
 </div>
 <div align="center">
-    @* <div style="width: 40%; background: #f0ead6; padding: 15px"> *@
-
-
     <div class="card" style="width: 40%">
         <div class="card-header">
             <b>@Model.listName List</b>
@@ -34,7 +27,4 @@
             <a class="btn btn-info" href="edit?listId=@Model.listId">Edit</a>
         </div>
     </div>
-    @* </div> *@
 </div>
-</body>
-</html>

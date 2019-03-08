@@ -1,16 +1,10 @@
 @using RecipeList.Ingredient
-@using RecipeList.Recipes
 @model RecipeList.Recipe.RecipeInfo
 @{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
     var ingredients = (List<Ingredient>) ViewData["ingredients"];
 }
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>Edit Recipe</title>
-</head>
-<body>
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">Edit Recipe</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -23,7 +17,7 @@
                 @* Name your Recipe *@
                 <div class="form-group">
                     <label for="name" style="color: #1560bd">Recipe Title</label>
-                    <input type="text" id="name" name="Name" value="@Model.Recipe.Name" class="form-control"/>
+                    <input type="text" id="name" name="Name" value="@Model.Recipe.Name" class="form-control" required/>
                 </div>
 
                 <input type="hidden" name="RecipeId" value="@Model.Recipe.Id"/>
@@ -43,14 +37,14 @@
                 @* Fill in a Description *@
                 <div class="form-group">
                     <label for="description" style="color: #1560bd">Brief Description of Recipe</label>
-                    <textarea rows="3" style="width: 100%" class="form-control" id="description" name="Description">@Model.Recipe.Description</textarea>
+                    <textarea rows="3" style="width: 100%" class="form-control" id="description" name="Description" required>@Model.Recipe.Description</textarea>
                 </div>
 
                 @* Enter your Instructions *@
                 <div class="form-group">
                     <label for="instruction" style="color: #1560bd">Detailed list of Instructions</label>
                     <textarea rows="10" style="width: 100%; padding: 15px" id="instruction" name="Instruction" class="form-control" 
-                    placeholder="1. First instruction &#10;2. Second Instruction &#10;3. Third Instruction &#10;...">@Model.Recipe.Instruction</textarea>
+                    placeholder="1. First instruction &#10;2. Second Instruction &#10;3. Third Instruction &#10;..." required>@Model.Recipe.Instruction</textarea>
                 </div>
 
                 @* Enter Ingredients and Amounts *@
@@ -80,6 +74,10 @@
                         <option>oz</option>
                         <option>tbsp.</option>
                         <option>tsp.</option>
+                        <option>pinch</option>
+                        <option>slice(s)</option>
+                        <option>package(s)</option>
+                        <option>can(s)</option>
                     </select>
 
                     <input type="button" class="btn btn-info" id="add-row" value="Add Ingredient"/>
@@ -174,8 +172,6 @@
         </div>
     </div>
 </div>
-</body>
-</html>
 
 @* View Logic *@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>

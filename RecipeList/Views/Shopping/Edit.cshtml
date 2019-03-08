@@ -1,13 +1,9 @@
-@using RecipeList.Shopping
 @model RecipeList.Shopping.ShoppingListItems
-
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
     var items = (List<string>) ViewData["items"];
 }
-<html>
-<body background="/bluebg.jpg">
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">Edit Shopping List</h2>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -119,7 +115,7 @@
                 </div>
             </div>
         </form>
-        
+
         <script>
             $('#confirm-delete').on('show.bs.modal',
                 function(e) {
@@ -146,5 +142,3 @@
 
     </div>
 </div>
-</body>
-</html>

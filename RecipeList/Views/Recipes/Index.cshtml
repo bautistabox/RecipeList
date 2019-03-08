@@ -1,12 +1,12 @@
 @using RecipeList.Recipe
-@using RecipeList.Recipes
 @model List<RecipeList.Recipe.RecipeItems>
 @{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
     var categories = (List<Category>) ViewData["categories"];
     var allCategories = (List<Category>) ViewData["allCategories"];
     var currentSearch = (string) ViewData["currentSearch"];
 }
-<body>
 <script src="https://unpkg.com/ionicons@4.4.4/dist/ionicons.js"></script>
 <script src="~/js/rating.js"></script>
 <div>
@@ -110,4 +110,3 @@
         </div>
     </div>
 </div>
-</body>

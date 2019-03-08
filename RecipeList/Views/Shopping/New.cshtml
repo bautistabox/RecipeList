@@ -1,6 +1,4 @@
-@using RecipeList.Shopping
 @model RecipeList.Shopping.ShoppingList
-
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
@@ -8,13 +6,6 @@
     var user = (string) ViewData["username"];
     var defaultTitle = user + "'s List";
 }
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>New Shopping List</title>
-</head>
-<body>
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">New Shopping List</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -31,8 +22,8 @@
                 <div class="form-group" align="center">
                     <label for="listItemInput" style="color: #1560bd">
                         Add Items to your list:
-                    
-                    <input list="items" name="myListItem" id="listItemInput"/>
+
+                        <input list="items" name="myListItem" id="listItemInput"/>
                     </label>
                     <datalist id="items">
                         @foreach (var i in items)
@@ -103,5 +94,3 @@
         </form>
     </div>
 </div>
-</body>
-</html>

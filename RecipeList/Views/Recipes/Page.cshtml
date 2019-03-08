@@ -1,6 +1,4 @@
-@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using RecipeList.Comment
-@using RecipeList.Recipe
 @model RecipeList.Recipe.RecipeInfo
 
 @{
@@ -18,8 +16,6 @@
     </style>
     <title>@Model.Recipe.Name</title>
 </head>
-
-<body>
 <div class="card" style="background-color: transparent">
     <div align="center" class="card-header" style="background: #f0ead6">
         @if (@Model.Recipe.UploaderId == @Model.CurrentUser)
@@ -192,4 +188,3 @@
 
     }
 </script>
-</body>

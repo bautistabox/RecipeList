@@ -3,16 +3,11 @@
 @using RecipeList.Recipes
 @model RecipeInputModel
 @{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
     var ingredients = (List<Ingredient>) ViewData["ingredients"];
     var categories = (List<Category>) ViewData["categories"];
 }
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>New Recipe</title>
-</head>
-<body>
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">New Recipe</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -116,7 +111,7 @@
                 <div class="form-group" align="center">
                     <label asp-for="Photo" style="color: #1560bd"></label>
                     <br/>
-                    <input style="color: #1560bd" id="picture" name="Photo" type="file"/>
+                    <input style="color: #1560bd" id="picture" name="Photo" type="file" src="noimage.png"/>
                 </div>
             </div>
         </form>
@@ -127,8 +122,6 @@
         </div>
     </div>
 </div>
-</body>
-</html>
 
 @* View Logic *@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
