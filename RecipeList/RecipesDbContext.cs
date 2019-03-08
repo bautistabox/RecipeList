@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeList.Accounts;
 using RecipeList.Recipe;
-using RecipeList.Recipes;
 using RecipeList.Shopping;
 
 namespace RecipeList

@@ -1,5 +1,6 @@
 @using RecipeList.Recipe
 @model List<RecipeList.Recipe.RecipeItems>
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
@@ -7,6 +8,9 @@
     var allCategories = (List<Category>) ViewData["allCategories"];
     var currentSearch = (string) ViewData["currentSearch"];
 }
+
+@* This view displays recipes (random, searched, sorted by category) *@
+
 <script src="https://unpkg.com/ionicons@4.4.4/dist/ionicons.js"></script>
 <script src="~/js/rating.js"></script>
 <div>

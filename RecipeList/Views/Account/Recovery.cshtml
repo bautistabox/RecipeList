@@ -1,10 +1,12 @@
 @model RecipeList.Accounts.ForgotPasswordViewModel
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
     var user = ViewData["user"];
     var uniqueId = ViewData["uniqueId"];
 }
+
 <style type="text/css">
     .field-validation-error { color: #ff0000; }
 
@@ -22,6 +24,7 @@
 
     .validation-summary-valid { display: none; }
 </style>
+
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">Reset your password</h2><br/>
     <div align="left" style="width: 40%">

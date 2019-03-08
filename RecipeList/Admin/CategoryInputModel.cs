@@ -1,4 +1,4 @@
-namespace RecipeList.Accounts
+namespace RecipeList.Admin
 {
     public class CategoryInputModel
     {

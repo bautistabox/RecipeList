@@ -6,11 +6,11 @@ namespace RecipeList.Shopping
     {
        
         
-        public int listId { get; set; }
-        public string listOwner { get; set; }
-        public int listOwnerId { get; set; }
-        public string listName { get; set; }
-        public string[] listItems { get; set; }
+        public int ListId { get; set; }
+        public string ListOwner { get; set; }
+        public int ListOwnerId { get; set; }
+        public string ListName { get; set; }
+        public string[] ListItems { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

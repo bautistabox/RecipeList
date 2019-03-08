@@ -1,4 +1,5 @@
 @model RecipeList.Shopping.ShoppingList
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
@@ -6,6 +7,7 @@
     var user = (string) ViewData["username"];
     var defaultTitle = user + "'s List";
 }
+
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">New Shopping List</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -19,12 +21,14 @@
                     <input type="text" id="Name" name="title" value="@defaultTitle" class="form-control"/>
                 </div>
 
+                @* List item insertion *@
                 <div class="form-group" align="center">
                     <label for="listItemInput" style="color: #1560bd">
                         Add Items to your list:
 
                         <input list="items" name="myListItem" id="listItemInput"/>
                     </label>
+                    @* Data list is populated by historical items previously entered by this user *@
                     <datalist id="items">
                         @foreach (var i in items)
                         {
@@ -37,7 +41,11 @@
                 <script type="text/javascript">
                     var itemList = [];
 
+                    @* BTN handlers *@
                     $(document).ready(function() {
+                        @* HTML markup is generated and inserted into the view. 
+                        A class is generated for each ingredient so that they can be accessed when creating 
+                        the list *@
                         $("#add-row").click(function() {
                             var name = $("#listItemInput").val();
                             name = name.charAt(0).toUpperCase() + name.slice(1);
@@ -59,11 +67,13 @@
                             for (var i = 0; i < itemListElements.length; i++) {
                                 itemList.push(itemListElements[i].innerHTML);
                             }
+                            @* Created JSON object to send back to the controller *@
                             var data = { Name: title, Len: itemList.length, Items: itemList };
 
                             document.getElementById('data').value = JSON.stringify(data);
                             $('#myForm').submit();
                         });
+                        @* function for deleting item on list *@
                         $('#myTable').on('click',
                             'button[type="button"]',
                             function() {
@@ -71,6 +81,7 @@
                             });
                     });
                 </script>
+                @* Empty  table to hold list items *@
                 <div align="center">
                     <div style="width: 65%">
                         <table class="table table-light" id="myTable">

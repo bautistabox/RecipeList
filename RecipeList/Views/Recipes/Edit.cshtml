@@ -1,10 +1,12 @@
 @using RecipeList.Ingredient
 @model RecipeList.Recipe.RecipeInfo
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
     var ingredients = (List<Ingredient>) ViewData["ingredients"];
 }
+
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">Edit Recipe</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -154,6 +156,7 @@
                 });
         </script>
 
+        @* Confirm deletion of recipe *@
         <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

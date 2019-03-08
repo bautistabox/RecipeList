@@ -2,12 +2,14 @@
 @using RecipeList.Recipe
 @using RecipeList.Recipes
 @model RecipeInputModel
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
     var ingredients = (List<Ingredient>) ViewData["ingredients"];
     var categories = (List<Category>) ViewData["categories"];
 }
+
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">New Recipe</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>

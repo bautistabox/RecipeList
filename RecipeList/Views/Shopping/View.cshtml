@@ -1,19 +1,22 @@
 @model RecipeList.Shopping.ShoppingListItems
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
+
+@* This view displays selected shopping list *@
 <div align="center" style="padding: 5%">
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
 </div>
 <div align="center">
     <div class="card" style="width: 40%">
         <div class="card-header">
-            <b>@Model.listName List</b>
+            <b>@Model.ListName List</b>
         </div>
         <div class="card-body" style="background: #f0ead6;">
             <table class="table table-bordered table-light">
-                @foreach (var item in Model.listItems)
+                @foreach (var item in Model.ListItems)
                 {
                     <tr>
                         <td>
@@ -24,7 +27,7 @@
             </table>
         </div>
         <div class="card-footer">
-            <a class="btn btn-info" href="edit?listId=@Model.listId">Edit</a>
+            <a class="btn btn-info" href="edit?listId=@Model.ListId">Edit</a>
         </div>
     </div>
 </div>

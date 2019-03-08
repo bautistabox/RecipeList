@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using RecipeList.Authentication;
 using RecipeList.Comment;
 using RecipeList.Recipes;
@@ -68,6 +66,7 @@ namespace RecipeList.Recipe
                 }
             }
 
+            // create a recipe item for each recipe
             var recipeItems = new List<RecipeItems>();
             foreach (var recipe in dbRecipes)
             {
@@ -97,6 +96,7 @@ namespace RecipeList.Recipe
                     recipeItem.RecipePhoto64 = Convert.ToBase64String(recipeItem.RecipePhoto);
                 }
 
+                // this is a shortened version of the recipe description for the preview card
                 if (recipeItem.RecipeDescription.Length > 68)
                 {
                     recipeItem.RecipeDescShort = recipeItem.RecipeDescription.Substring(0, 68) + "...";
@@ -122,6 +122,7 @@ namespace RecipeList.Recipe
         [Route("recipes/user/{userId}")]
         public IActionResult UserRecipes(int userId)
         {
+            // loads up all the recipes created by a specific user
             var dbRecipes = _db.Recipes.Where(r => r.UploaderId == userId).ToList();
             var recipeItems = new List<RecipeItems>();
             foreach (var recipe in dbRecipes)
@@ -181,6 +182,7 @@ namespace RecipeList.Recipe
                 return View("Index");
             }
 
+            // controller action method handles searching by category
             var dbRecipes = _db.Recipes.Where(r => r.CategoryId == categoryId);
 
             var recipeItems = new List<RecipeItems>();
@@ -237,6 +239,8 @@ namespace RecipeList.Recipe
         [HttpGet]
         public IActionResult Index()
         {
+            // this controller action method takes 12 random recipes and uses them for the front page
+            
             var model = _db.Recipes
                 .Select(r => new RecipeItems
                 {
@@ -317,6 +321,7 @@ namespace RecipeList.Recipe
                 ViewData["ingredients"] = viewIngredients;
             }
 
+            // data to populate edit form with old values
             var recipeInfo = new RecipeInfo();
             recipeInfo.Categories = _db.Categories.OrderBy(s => s.Name).ToList();
             recipeInfo.RecipeIngredients = new List<RecipeIngredients>();
@@ -358,6 +363,10 @@ namespace RecipeList.Recipe
                     });
             }
 
+            // formatting the recipe ingredient as
+            // "[amount] [unit of measure] of [ingredient]" (1 cup of flour) or
+            // "[amount] [ingredient]" (1 chicken breast) or
+            // "[ingredient]" (basil)
             for (var i = 0; i < recipeInfo.Ingredients.Count; i++)
             {
                 var fullIngredient = "";
@@ -394,8 +403,7 @@ namespace RecipeList.Recipe
                 return RedirectToAction("Index");
             }
 
-//            category == null ? categoryId = dbRecipe.CategoryId : categoryId = category.Id;
-
+            // checking if the user specified a category
             if (category == null)
             {
                 categoryId = dbRecipe.CategoryId;
@@ -405,7 +413,7 @@ namespace RecipeList.Recipe
                 categoryId = category.Id;
             }
 
-
+            // updating selected recipe
             dbRecipe.Name = model.Name;
             dbRecipe.Description = model.Description;
             dbRecipe.Instruction = model.Instruction;
@@ -427,6 +435,7 @@ namespace RecipeList.Recipe
 
             _db.SaveChanges();
 
+            // removing ingredients have been removed
             var deleteIngredients =
                 from recipeIngredients in _db.RecipeIngredients
                 where recipeIngredients.RecipeId == model.RecipeId
@@ -438,6 +447,7 @@ namespace RecipeList.Recipe
 
             _db.SaveChanges();
 
+            // adding back ingredients that are still there, checking for duplicates
             foreach (var ingredientItem in model.Ingredients)
             {
                 var ingredient = new Ingredient.Ingredient();
@@ -480,6 +490,7 @@ namespace RecipeList.Recipe
         [Authorize]
         public IActionResult Process(RecipeInputModel model)
         {
+            // controller action method to process new recipes
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("New");
@@ -489,7 +500,8 @@ namespace RecipeList.Recipe
 
             var catId = _db.Categories.First(u => u.Name == model.Category).Id;
             var recipe = new Recipe();
-            if (model.Photo != null)
+            
+            if (model.Photo != null) // user provided photo
             {
                 var size = model.Photo.Length;
                 var stream = new MemoryStream();
@@ -513,7 +525,7 @@ namespace RecipeList.Recipe
                 };
                 _db.Recipes.Add(recipe);
             }
-            else
+            else // user did not provide photo
             {
                 recipe = new Recipe
                 {
@@ -547,7 +559,7 @@ namespace RecipeList.Recipe
                 {
                     ingredient = dbIngredient;
                 }
-
+                // checking for duplicate recipe ingredients
                 var dupe = _db.RecipeIngredients.FirstOrDefault(ri =>
                     ri.RecipeId == recipe.Id && ri.IngredientId == ingredient.Id);
                 if (dupe == null)
@@ -685,6 +697,7 @@ namespace RecipeList.Recipe
             recipeInfo.RatingCount = dbRating.Count;
             if (dbRating.Count > 0)
             {
+                // averaging the rating
                 foreach (var rate in dbRating)
                 {
                     rating += rate.Rating;

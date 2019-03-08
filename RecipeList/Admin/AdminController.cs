@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using RecipeList.Accounts;
 using RecipeList.Recipe;
-using RecipeList.Recipes;
 namespace RecipeList.Admin
 {
     public class AdminController : Controller
@@ -47,6 +45,7 @@ namespace RecipeList.Admin
 
             foreach (var categoryItem in categoriesList.Categories)
             {
+                // check to see if category already exists
                 if (!currentCategories.Contains(categoryItem))
                 {
                     var cat = new Category

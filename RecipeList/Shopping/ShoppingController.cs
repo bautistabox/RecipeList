@@ -42,10 +42,10 @@ namespace RecipeList.Shopping
                 .Where(u => u.UserId == sessionUId)
                 .Select(u => new ShoppingListItems
                 {
-                    listId = u.Id,
-                    listName = u.Name,
-                    listOwner = sessionUName,
-                    listOwnerId = sessionUId.Value,
+                    ListId = u.Id,
+                    ListName = u.Name,
+                    ListOwner = sessionUName,
+                    ListOwnerId = sessionUId.Value,
                     UpdatedAt = u.UpdatedAt ?? DateTime.Now,
                     CreatedAt = u.CreatedAt
                 })
@@ -55,11 +55,11 @@ namespace RecipeList.Shopping
             {
                 var items = _db
                     .ListItems
-                    .Where(l => l.ListId == mod.listId)
+                    .Where(l => l.ListId == mod.ListId)
                     .Select(i => i.ItemName)
                     .ToList();
 
-                mod.listItems = items.ToArray();
+                mod.ListItems = items.ToArray();
             }
 
             return View(model);
@@ -153,19 +153,19 @@ namespace RecipeList.Shopping
                 .Where(u => u.Id == listId)
                 .Select(u => new ShoppingListItems
                 {
-                    listId = u.Id,
-                    listName = u.Name,
-                    listOwner = sessionUName,
-                    listOwnerId = sessionUId.Value
+                    ListId = u.Id,
+                    ListName = u.Name,
+                    ListOwner = sessionUName,
+                    ListOwnerId = sessionUId.Value
                 }).SingleOrDefault();
             var items = _db
                 .ListItems
-                .Where(l => l.ListId == model.listId)
+                .Where(l => l.ListId == model.ListId)
                 .Select(i => i.ItemName)
                 .ToList();
             if (model != null)
             {
-                model.listItems = items.ToArray();
+                model.ListItems = items.ToArray();
             }
             
             return View(model);
@@ -182,21 +182,21 @@ namespace RecipeList.Shopping
                 .Where(u => u.Id == listId)
                 .Select(u => new ShoppingListItems
                 {
-                    listId = u.Id,
-                    listName = u.Name,
-                    listOwner = sessionUName,
-                    listOwnerId = sessionUId.Value
+                    ListId = u.Id,
+                    ListName = u.Name,
+                    ListOwner = sessionUName,
+                    ListOwnerId = sessionUId.Value
                 })
                 .SingleOrDefault();
             var items = _db
                 .ListItems
-                .Where(l => l.ListId == model.listId)
+                .Where(l => l.ListId == model.ListId)
                 .Select(i => i.ItemName)
                 .ToList();
 
             if (model != null)
             {
-                model.listItems = items.ToArray();
+                model.ListItems = items.ToArray();
             }
 
             var dupeList = new List<string>();
@@ -312,14 +312,14 @@ namespace RecipeList.Shopping
         public IActionResult Delete(ShoppingListItems model)
         {
             var deleteListItems = from listItem in _db.ListItems
-                where listItem.ListId == model.listId
+                where listItem.ListId == model.ListId
                 select listItem;
 
             foreach (var listItem in deleteListItems)
                 _db.ListItems.Remove(listItem);
 
             var deleteList = from list in _db.Lists
-                where list.Id == model.listId
+                where list.Id == model.ListId
                 select list;
 
             foreach (var list in deleteList)

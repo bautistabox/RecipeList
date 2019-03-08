@@ -1,17 +1,22 @@
 @model RecipeList.Shopping.ShoppingListItems
+
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
     var items = (List<string>) ViewData["items"];
 }
+
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">Edit Shopping List</h2>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
     <br/><br/>
+    
+    @* Hidden form for passing information important to deletion *@
     <form id="deleteForm" action="/shopping/delete" method="POST">
-        <input type="hidden" name="listId" value="@Model.listId"/>
-        <input type="hidden" name="listItems" value="@Model.listItems"/>
+        <input type="hidden" name="listId" value="@Model.ListId"/>
+        <input type="hidden" name="listItems" value="@Model.ListItems"/>
     </form>
+    
     <div align="center">
         <div class="btn btn-group">
             <button type="button" id="create-list" class="btn btn-info">Save</button>
@@ -26,14 +31,16 @@
             <div style="padding: 15px; background: #f0ead6">
                 <div class="form-group">
                     <label for="Name" style="color: #1560bd">Name</label>
-                    <input type="text" id="Name" name="title" value="@Model.listName" class="form-control"/>
+                    <input type="text" id="Name" name="title" value="@Model.ListName" class="form-control"/>
                 </div>
 
+                @* List Item Insertion *@
                 <div class="form-group" align="center">
                     <label for="listItemInput" style="color: #1560bd">
                         Add Items to your list:
                         <input list="items" name="myListItem" id="listItemInput"/>
                     </label>
+                    @* Data list is populated by historical items previously entered by this user *@
                     <datalist id="items">
                         @foreach (var i in items)
                         {
@@ -46,7 +53,11 @@
                 <script type="text/javascript">
                     var itemList = [];
 
+                    @* btn handlers *@
                     $(document).ready(function() {
+                        @* HTML markup is generated and inserted into the view. 
+                        A class is generated for each ingredient so that they can be accessed when creating 
+                        the list *@
                         $("#add-row").click(function() {
                             var name = $("#listItemInput").val();
                             var markup = "<tr><td class='listItem" +
@@ -70,13 +81,15 @@
                             for (var i = 0; i < itemListElements.length; i++) {
                                 itemList.push(itemListElements[i].innerHTML);
                             }
-
-                            var data = { Name: title, Len: itemList.length, Items: itemList, ListId: @Model.listId };
+                            
+                            @* Created JSON object to send back to the controller *@
+                            var data = { Name: title, Len: itemList.length, Items: itemList, ListId: @Model.ListId };
 
                             document.getElementById('data').value = JSON.stringify(data);
 
                             $('#myForm').submit();
                         });
+                        @* Function for deleting item on list *@
                         $('#myTable').on('click',
                             'button[type="button"]',
                             function() {
@@ -91,11 +104,12 @@
                             <thead>
                             <tr>
                                 <th scope="col" style="width: 90%">Items</th>
-                                <th scope="col" style="width: 10%"></th>
+                                <th scope="col" style="width: 10%"></th> @* column to hold 'x' for deleting*@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach (var item in Model.listItems)
+                            @* Filling in items that already exist on this list *@
+                            @foreach (var item in Model.ListItems)
                             {
                                 <tr>
                                     <td class="listItem" + @item>@item</td>
@@ -123,6 +137,7 @@
                 });
         </script>
 
+        @* ARE YOU SURE YOU WANT TO DELETE YOUR SHOPPING LIST??? *@
         <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -130,13 +145,14 @@
                         <h6 class="display-4" style="color: red">Confirm Deletion</h6>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete the list titled: <b style="color: red">@Model.listName</b>?
+                        Are you sure you want to delete the list titled: <b style="color: red">@Model.ListName</b>?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">No, Take me back</button>
                         <button type="button" class="btn btn-danger" id="delete-list">Yes, Delete</button>
                     </div>
                 </div>
+                
             </div>
         </div>
 

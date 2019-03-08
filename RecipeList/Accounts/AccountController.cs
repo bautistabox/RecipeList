@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Win32;
 using RecipeList.Authentication;
-using RecipeList.Recipe;
 
 namespace RecipeList.Accounts
 {
@@ -49,12 +46,13 @@ namespace RecipeList.Accounts
             var bio = new UserBio
             {
                 UserId = user.Id,
-                Bio = user.DisplayName + "'s bio"
+                Bio = user.DisplayName + "'s bio" // default bio
             };
 
             var dbUserName = _db.Users.SingleOrDefault(u => u.Username == user.Username);
             var dbUserEmail = _db.Users.SingleOrDefault(u => u.Email == user.Email);
 
+            // adding custom model state errors
             if (dbUserName != null || dbUserEmail != null || user.Password != model.ConfirmPassword)
             {
                 if (dbUserName != null)
@@ -81,6 +79,7 @@ namespace RecipeList.Accounts
             _db.UserBios.Add(bio);
             _db.SaveChanges();
 
+            // unique Id for email verification
             var uniqueIdentifier = new UniqueIdentifiers
             {
                 UserId = user.Id,
@@ -336,6 +335,7 @@ namespace RecipeList.Accounts
         [Route("account/user/{id}")]
         public IActionResult UserProfile(int id)
         {
+            // this controller method is for viewing a user's profile that is not your own
             var dbUser = _db.Users.FirstOrDefault(u => u.Id == id);
             if (dbUser == null)
             {
