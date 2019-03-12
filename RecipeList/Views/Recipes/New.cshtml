@@ -10,6 +10,25 @@
     var categories = (List<Category>) ViewData["categories"];
 }
 
+<style type="text/css">
+    .field-validation-error { color: #ff0000; }
+
+    .field-validation-valid { display: none; }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid { display: none; }
+</style>
+
+
 <div align="center">
     <h2 class="display-4" style="color: #f0ead6">New Recipe</h2><br/>
     <a class="btn btn-info" href="javascript:history.back()">Go Back</a>
@@ -19,10 +38,12 @@
         <form id="recipe-form" action="/recipes/process" method="post" enctype="multipart/form-data">
             <div style="padding: 15px; background: #f0ead6">
 
+                @Html.ValidationSummary()
+                
                 @* Name your Recipe *@
                 <div class="form-group">
                     <label asp-for="Name" style="color: #1560bd"></label>
-                    <input type="text" id="name" name="Name" class="form-control"/>
+                    <input type="text" id="name" name="Name" class="form-control" required="true"/>
                 </div>
 
                 @* Choose a Category *@
@@ -50,7 +71,7 @@
                 </div>
 
                 @* Enter Ingredients and Amounts *@
-                <div class="form-group" align="center" id="ingredientDiv">
+                <div class="form-group" name="ingDiv" align="center" id="ingredientDiv">
 
                     @* Ingredient Input *@
                     <label for="ingredientInput">Ingredient:</label>

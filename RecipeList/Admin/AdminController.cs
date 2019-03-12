@@ -15,6 +15,7 @@ namespace RecipeList.Admin
         }
 
         [HttpGet]
+        [Route("/admin/home")]
         public IActionResult Home()
         {
             var user = HttpContext.Session.GetString("_Username");

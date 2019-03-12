@@ -240,7 +240,7 @@ namespace RecipeList.Recipe
         public IActionResult Index()
         {
             // this controller action method takes 12 random recipes and uses them for the front page
-            
+
             var model = _db.Recipes
                 .Select(r => new RecipeItems
                 {
@@ -389,7 +389,7 @@ namespace RecipeList.Recipe
         [HttpPost]
         public IActionResult Update(RecipeInputModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || model.Ingredients == null)
             {
                 return RedirectToAction("Edit", new {recipeId = model.RecipeId});
             }
@@ -490,17 +490,36 @@ namespace RecipeList.Recipe
         [Authorize]
         public IActionResult Process(RecipeInputModel model)
         {
-            // controller action method to process new recipes
-            if (!ModelState.IsValid)
-            {
-                return RedirectToAction("New");
-            }
-
             var sessionUId = HttpContext.Session.GetInt32("_Userid");
+            // controller action method to process new recipes
+            if (!ModelState.IsValid || model.Ingredients == null)
+            {
+                var user = _db.Users.FirstOrDefault(u => u.Id == sessionUId);
+
+                // this block will grab the recipe items, only this user has entered before
+                if (user != null)
+                {
+                    var userRecipesIds = _db.Recipes.Where(r => r.UploaderId == user.Id).Select(r => r.Id).ToList();
+                    var recipeIngredientsIds =
+                        _db.RecipeIngredients.Where(ri => userRecipesIds.Contains(ri.RecipeId))
+                            .Select(ri => ri.IngredientId).ToList();
+                    var ingredients = _db.Ingredients.Where(i => recipeIngredientsIds.Contains(i.Id)).ToList();
+                    ViewData["ingredients"] = ingredients;
+                }
+
+                var dbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
+                ViewData["categories"] = dbCategories;
+                if (model.Ingredients == null)
+                {
+                   ModelState.AddModelError("ingDiv", "Ingredients are required");
+                }
+
+                return View("New");
+            }
 
             var catId = _db.Categories.First(u => u.Name == model.Category).Id;
             var recipe = new Recipe();
-            
+
             if (model.Photo != null) // user provided photo
             {
                 var size = model.Photo.Length;
@@ -559,6 +578,7 @@ namespace RecipeList.Recipe
                 {
                     ingredient = dbIngredient;
                 }
+
                 // checking for duplicate recipe ingredients
                 var dupe = _db.RecipeIngredients.FirstOrDefault(ri =>
                     ri.RecipeId == recipe.Id && ri.IngredientId == ingredient.Id);

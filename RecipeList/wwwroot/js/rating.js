@@ -1,6 +1,4 @@
 function starRating(rating, elementId) {
-    console.log("in starRating");
-    console.log(elementId);
     for (var i = 0; i < 5; i++) {
         var ionIcon = document.createElement("ion-icon");
         if (i < rating) {

@@ -1,3 +1,4 @@
+@model List<RecipeList.Recipe.Category>
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
@@ -59,7 +60,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var cat in Model.Categories)
+                @foreach (var cat in Model)
                 {
                     <tr>
                         <td class="categoryItem" + @cat.Name>@cat.Name</td>

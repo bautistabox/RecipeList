@@ -42,7 +42,7 @@ namespace RecipeList.Accounts
                 DisplayName = model.DisplayName,
                 RegisteredAt = DateTime.Now
             };
-            
+
             var bio = new UserBio
             {
                 UserId = user.Id,
@@ -93,8 +93,10 @@ namespace RecipeList.Accounts
             const string from = "infinity.test.email@gmail.com";
             const string fromName = "RecipeList";
             const string subject = "RecipeList Confirmation Email";
-            var body = "Click <a href='https://localhost:5001/account/verify/" + user.Id + "/" +
+            var body = "Click <a href='https://myrecipelist.azurewebsites.net/account/verify/" + user.Id + "/" +
                        uniqueIdentifier.UniqueId + "'>Here</a> to confirm your email and gain access to the site!";
+//            var body = "Click <a href='https://localhost:5001/account/verify/" + user.Id + "/" +
+//                       uniqueIdentifier.UniqueId + "'>Here</a> to confirm your email and gain access to the site!";
 
             _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
             return RedirectToAction("AwaitingVerification");
@@ -128,7 +130,7 @@ namespace RecipeList.Accounts
             {
                 return View("ForgotPassword");
             }
-            
+
             var user = _db.Users.FirstOrDefault(u => u.Email == model.Email);
             if (user == null)
             {
@@ -150,7 +152,8 @@ namespace RecipeList.Accounts
             _db.SaveChanges();
 
             var body = "Hello " + user.DisplayName +
-                       ",<br/><br/>Click this <a href='https://localhost:5001/account/recovery/" + user.Id + "/" +
+                       ",<br/><br/>Click this <a href='https://myrecipelist.azurewebsites.net/account/recovery/" +
+                       user.Id + "/" +
                        linkId + "'>link</a> to reset your password.";
             _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
             return RedirectToAction("CheckEmail");
@@ -171,9 +174,10 @@ namespace RecipeList.Accounts
             {
                 return View("ForgotUsername");
             }
+
             var user = _db.Users.FirstOrDefault(u => u.Email == model.Email);
-            
-            
+
+
             if (user == null)
             {
                 ModelState.AddModelError("Email", "That Email doesn't exist");
@@ -187,7 +191,7 @@ namespace RecipeList.Accounts
                        user.Username + "</b>";
 
             _emailSender.SendEmail(user.Email, user.Username, from, fromName, subject, body, true);
-            return RedirectToAction("Login");
+            return RedirectToAction("CheckEmail");
         }
 
         [HttpGet]
@@ -221,6 +225,7 @@ namespace RecipeList.Accounts
                 ModelState.AddModelError("PasswordOne", "Passwords do not match.");
                 return View("Recovery");
             }
+
             var dbUser = _db.Users.FirstOrDefault(u => u.Id == user);
 
             if (dbUser == null)
@@ -234,8 +239,9 @@ namespace RecipeList.Accounts
             {
                 uniqueIdentifier.IsVerified = true;
             }
+
             _db.SaveChanges();
-            
+
             return RedirectToAction("RecoverySuccess");
         }
 
@@ -245,28 +251,23 @@ namespace RecipeList.Accounts
         {
             return View();
         }
-        
+
         [HttpGet]
         [Route("account/verify/{id}/{uniqueId}")]
         public IActionResult Verify(int id, Guid uniqueId)
         {
             var dbEmailVer = _db.UniqueIdentifiers.FirstOrDefault(e => e.UserId == id);
-            if (dbEmailVer == null)
+            if (dbEmailVer != null)
             {
-                return View("Login");
-            }
-            if (dbEmailVer.IsVerified)
-            {
-                return View("ExpiredEmailVerifyView");
+                if (uniqueId != dbEmailVer.UniqueId)
+                {
+                    return View("/");
+                }
+
+                dbEmailVer.IsVerified = true;
+                _db.SaveChanges();
             }
 
-            if (uniqueId != dbEmailVer.UniqueId)
-            {
-                return View("/");
-            }
-
-            dbEmailVer.IsVerified = true;
-            _db.SaveChanges();
             return View();
         }
 
@@ -303,6 +304,7 @@ namespace RecipeList.Accounts
             {
                 return View("Login");
             }
+
             if (!dbEmailVer.IsVerified)
             {
                 ModelState.AddModelError("Username", "The specified user has not yet verified their email");
@@ -341,7 +343,7 @@ namespace RecipeList.Accounts
             {
                 RedirectToAction("NoneFound");
             }
-            
+
             var dbRecipes = _db.Recipes.Where(r => r.UploaderId == dbUser.Id).ToList();
             var recipeCount = 0;
             var recipeIds = new List<int>();
@@ -351,6 +353,7 @@ namespace RecipeList.Accounts
                 {
                     recipeIds.Add(recipe.Id);
                 }
+
                 recipeCount = dbRecipes.Count;
             }
 
@@ -360,7 +363,7 @@ namespace RecipeList.Accounts
             {
                 bio = dbUserBio.Bio;
             }
-            
+
             var dbUserRatings = _db.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).ToList();
             var numberRatings = 0;
             var avgRating = 0;
@@ -379,6 +382,7 @@ namespace RecipeList.Accounts
             {
                 return View("/");
             }
+
             var model = new ProfileViewModel
             {
                 DisplayName = dbUser.DisplayName,
@@ -392,7 +396,7 @@ namespace RecipeList.Accounts
             };
 
             ViewData["Recipes"] = dbRecipes;
-           
+
             return View(model);
         }
 
@@ -416,6 +420,7 @@ namespace RecipeList.Accounts
                 {
                     recipeIds.Add(recipe.Id);
                 }
+
                 recipeCount = dbRecipes.Count;
             }
 
@@ -425,7 +430,7 @@ namespace RecipeList.Accounts
             {
                 bio = dbUserBio.Bio;
             }
-            
+
             var dbUserRatings = _db.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).ToList();
             var numberRatings = 0;
             var avgRating = 0;
@@ -439,7 +444,7 @@ namespace RecipeList.Accounts
 
                 avgRating = avgRating / dbUserRatings.Count;
             }
-            
+
             var model = new ProfileViewModel
             {
                 DisplayName = dbUser.DisplayName,
@@ -453,7 +458,7 @@ namespace RecipeList.Accounts
             };
 
             ViewData["Recipes"] = dbRecipes;
-           
+
             return View(model);
         }
 
@@ -485,10 +490,10 @@ namespace RecipeList.Accounts
 
             user.DisplayName = updatedDisplayName;
             _db.SaveChanges();
-            
+
             return RedirectToAction("Profile");
         }
-        
+
 
         [HttpGet]
         public IActionResult NoneFound()

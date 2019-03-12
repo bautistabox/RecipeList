@@ -10,14 +10,17 @@ namespace RecipeList.Recipes
         public int RecipeId { get; set; }
 
         [Required]
+        [MaxLength(50)]
         [Display(Name = "Recipe Title")]
         public string Name { get; set; }
 
         [Required]
+        [MaxLength(1000000)]
         [Display(Name = "Brief Description of Recipe")]
         public string Description { get; set; }
 
         [Required]
+        [MaxLength(1000000)]
         [Display(Name = "Detailed List of Instructions")]
         public string Instruction { get; set; }
 
