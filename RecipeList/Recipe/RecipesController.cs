@@ -22,7 +22,8 @@ namespace RecipeList.Recipe
         }
 
         [HttpPost]
-        public IActionResult Save(int rId)
+        [Route("/recipes/save-favorite")]
+        public IActionResult SaveFavorite(int rId)
         {
             var uId = HttpContext.Session.GetInt32("_Userid");
             var savedRecipe = new SavedRecipe
@@ -33,6 +34,20 @@ namespace RecipeList.Recipe
             };
             _db.SavedRecipes.Add(savedRecipe);
             _db.SaveChanges();
+            return RedirectToAction("Page", new {recipeId = rId});
+        }
+
+        [HttpPost]
+        [Route("/recipes/delete-favorite")]
+        public IActionResult DeleteFavorite(int rId)
+        {
+            var uId = HttpContext.Session.GetInt32("_Userid");
+            var savedRecipe = _db.SavedRecipes.FirstOrDefault(sr => sr.RecipeId == rId && sr.UserId == uId);
+            if (savedRecipe != null)
+            {
+                _db.SavedRecipes.Remove(savedRecipe);
+                _db.SaveChanges();
+            }
             return RedirectToAction("Page", new {recipeId = rId});
         }
         
@@ -149,7 +164,7 @@ namespace RecipeList.Recipe
             }
 
             var dbSavedRecipes = _db.Recipes.Where(r => dbSavedRecipeIds.Contains(r.Id)).ToList();
-            dbRecipes = dbRecipes.Concat(dbSavedRecipes).ToList();
+            dbRecipes = dbSavedRecipes.Concat(dbRecipes).ToList();
             var recipeItems = new List<RecipeItems>();
             foreach (var recipe in dbRecipes)
             {
@@ -197,10 +212,9 @@ namespace RecipeList.Recipe
             ViewData["allCategories"] = allDbCategories;
             if (dbUser != null)
             {
-                ViewData["currentSearch"] = dbUser.DisplayName + "'s Created & Saved Recipes";
+                ViewData["currentSearch"] = dbUser.DisplayName + "'s Created/Favorited Recipes";
             }
             
-
             return View("Index", recipeItems);
         }
 
@@ -768,6 +782,19 @@ namespace RecipeList.Recipe
             {
                 ViewData["RecipeOwner"] = recipeOwner.DisplayName;
             }
+
+            var savedRecipe =
+                _db.SavedRecipes.FirstOrDefault(sr => sr.RecipeId == recipeId && sr.UserId == recipeInfo.CurrentUser);
+
+            if (savedRecipe != null)
+            {
+                ViewData["AlreadySaved"] = true;
+            }
+            else
+            {
+                ViewData["AlreadySaved"] = false;
+            }
+
 
             return View(recipeInfo);
         }

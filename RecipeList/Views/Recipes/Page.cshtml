@@ -6,6 +6,7 @@
     Layout = "_Layout";
     var commentInfo = (List<CommentInfo>) ViewData["CommentInfo"];
     var recipeOwner = (string) ViewData["RecipeOwner"];
+    var alreadySaved = (bool) ViewData["AlreadySaved"];
 }
 
 <head>
@@ -26,11 +27,18 @@
         {
             <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit Recipe</a><br/>
         }
+        else if(!alreadySaved)
+        {
+            <form asp-controller="Recipes" asp-action="SaveFavorite" method="post" id="saveRecipeForm">
+                <input hidden="true" name="rId" value="@Model.Recipe.Id"/>
+                <button class="btn btn-info" id="saveRecipeBtn">Add to favorites</button>
+            </form>
+        }
         else
         {
-            <form asp-controller="Recipes" asp-action="Save" method="post" id="saveRecipeForm">
+            <form asp-controller="Recipes" asp-action="DeleteFavorite" method="post" id="deleteFavoriteForm">
                 <input hidden="true" name="rId" value="@Model.Recipe.Id"/>
-                <button class="btn btn-info" id="saveRecipeBtn">Save Recipe</button>
+                <button class="btn btn-info" id="deleteFavoriteBtn">Remove from favorites</button>
             </form>
         }
        
@@ -183,9 +191,13 @@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script>
     $("#saveRecipeBtn").click(function() {
-        console.log("guess what it doesn't fucking work");
-        window.alert("Recipe Saved!");
+        window.alert("Recipe added to favorites!");
         $('#saveRecipeForm').submit();
+    });
+
+    $("#deleteFavoriteBtn").click(function() {
+        window.alert("Recipe removed from favorites!");
+        $('#deleteFavoriteForm').submit();
     });
     
     function add(ths, sno) {
