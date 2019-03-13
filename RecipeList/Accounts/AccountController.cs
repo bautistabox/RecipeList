@@ -46,7 +46,7 @@ namespace RecipeList.Accounts
             var bio = new UserBio
             {
                 UserId = user.Id,
-                Bio = user.DisplayName + "'s bio" // default bio
+                Bio = user.DisplayName + "\'s bio" // default bio
             };
 
             var dbUserName = _db.Users.SingleOrDefault(u => u.Username == user.Username);
@@ -475,6 +475,7 @@ namespace RecipeList.Accounts
             var bio = _db.UserBios.FirstOrDefault(ub => ub.UserId == user.Id);
             if (bio == null)
             {
+                updatedBio = "Bio of " + user.Username;
                 var newBio = new UserBio
                 {
                     Bio = updatedBio,
@@ -485,12 +486,26 @@ namespace RecipeList.Accounts
             }
             else
             {
-                bio.Bio = updatedBio;
+                if (updatedBio != null)
+                {
+                    bio.Bio = updatedBio;
+                }
+                else
+                {
+                    bio.Bio = bio.Bio;
+                }
             }
 
-            user.DisplayName = updatedDisplayName;
+            if (updatedDisplayName != null)
+            {
+                user.DisplayName = updatedDisplayName;
+            }
+            else
+            {
+                user.DisplayName = user.DisplayName;
+            }
+           
             _db.SaveChanges();
-
             return RedirectToAction("Profile");
         }
 

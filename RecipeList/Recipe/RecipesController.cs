@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -20,6 +21,21 @@ namespace RecipeList.Recipe
             _db = db;
         }
 
+        [HttpPost]
+        public IActionResult Save(int rId)
+        {
+            var uId = HttpContext.Session.GetInt32("_Userid");
+            var savedRecipe = new SavedRecipe
+            {
+                UserId = uId.Value,
+                RecipeId = rId,
+                SavedAt = DateTime.Now
+            };
+            _db.SavedRecipes.Add(savedRecipe);
+            _db.SaveChanges();
+            return RedirectToAction("Page", new {recipeId = rId});
+        }
+        
         [HttpGet]
         public IActionResult Search(RecipeSearchInputModel model)
         {
@@ -122,8 +138,18 @@ namespace RecipeList.Recipe
         [Route("recipes/user/{userId}")]
         public IActionResult UserRecipes(int userId)
         {
-            // loads up all the recipes created by a specific user
+            // loads up all the recipes created/saved by a specific user
+            var dbUser = _db.Users.FirstOrDefault(u => u.Id == userId);
             var dbRecipes = _db.Recipes.Where(r => r.UploaderId == userId).ToList();
+            var dbSavedRecipeObjs = _db.SavedRecipes.Where(sr => sr.UserId == userId).ToList();
+            var dbSavedRecipeIds = new List<int>(); 
+            foreach (var savedRecipe in dbSavedRecipeObjs)
+            {
+                dbSavedRecipeIds.Add(savedRecipe.RecipeId);
+            }
+
+            var dbSavedRecipes = _db.Recipes.Where(r => dbSavedRecipeIds.Contains(r.Id)).ToList();
+            dbRecipes = dbRecipes.Concat(dbSavedRecipes).ToList();
             var recipeItems = new List<RecipeItems>();
             foreach (var recipe in dbRecipes)
             {
@@ -169,6 +195,11 @@ namespace RecipeList.Recipe
             var allDbCategories = _db.Categories.OrderBy(s => s.Name).ToList();
             ViewData["categories"] = dbCategories;
             ViewData["allCategories"] = allDbCategories;
+            if (dbUser != null)
+            {
+                ViewData["currentSearch"] = dbUser.DisplayName + "'s Created & Saved Recipes";
+            }
+            
 
             return View("Index", recipeItems);
         }

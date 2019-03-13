@@ -22,7 +22,8 @@ namespace RecipeList
         public DbSet<UserBio> UserBios { get; set; }
         public DbSet<RecipeRating> RecipeRatings { get; set; }
         public DbSet<Comment.Comment> Comments { get; set; }
-
+        public DbSet<SavedRecipe> SavedRecipes { get; set; }
+ 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecipeIngredients>()

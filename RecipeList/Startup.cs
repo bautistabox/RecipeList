@@ -30,7 +30,6 @@ namespace RecipeList
             });
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IEmailSender, EmailSender>();
-//            var connection = @"Server=localhost;Database=RecipesLists;Trusted_Connection=True;";
             services.AddDbContext<RecipesDbContext>
                 (options => options.UseSqlServer(Configuration.GetConnectionString("RecipesLists")));
             services.AddDistributedMemoryCache();

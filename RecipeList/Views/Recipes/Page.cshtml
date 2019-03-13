@@ -5,7 +5,7 @@
     ViewBag.Title = "title";
     Layout = "_Layout";
     var commentInfo = (List<CommentInfo>) ViewData["CommentInfo"];
-    var RecipeOwner = (string) ViewData["RecipeOwner"];
+    var recipeOwner = (string) ViewData["RecipeOwner"];
 }
 
 <head>
@@ -26,13 +26,21 @@
         {
             <a href="/recipes/edit/@Model.Recipe.Id" class="btn btn-info">Edit Recipe</a><br/>
         }
+        else
+        {
+            <form asp-controller="Recipes" asp-action="Save" method="post" id="saveRecipeForm">
+                <input hidden="true" name="rId" value="@Model.Recipe.Id"/>
+                <button class="btn btn-info" id="saveRecipeBtn">Save Recipe</button>
+            </form>
+        }
+       
         <h1 class="display-4" style="display: inline-block">@Model.Recipe.Name</h1>
         <br/>
         <b>Category: </b><a href="/recipes/search/category/@Model.Category.Id">@Model.Category.Name</a>
 
         <br/>
         <em>
-            <b>Submitted by: <a href="/account/user/@Model.Recipe.UploaderId">@RecipeOwner</a></b>
+            <b>Submitted by: <a href="/account/user/@Model.Recipe.UploaderId">@recipeOwner</a></b>
         </em>
         <div>
             @for (var i = 0; i < 5; i++)
@@ -172,8 +180,14 @@
     <input hidden="true" value="@Model.Recipe.Id" name="rId"/>
     <input hidden="true" value="@Model.CurrentUser" name="currentUser"/>
 </form>
-
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script>
+    $("#saveRecipeBtn").click(function() {
+        console.log("guess what it doesn't fucking work");
+        window.alert("Recipe Saved!");
+        $('#saveRecipeForm').submit();
+    });
+    
     function add(ths, sno) {
 
         document.getElementById("rating").value = sno + 1;

@@ -11,20 +11,7 @@
 <script src="~/js/rating.js"></script>
 
 <script type="text/javascript"></script>
-<script>
-    function editable(displayNameVal, bioVal) {
-        var displayName = document.getElementById("editableDisplayName");
-        var bio = document.getElementById("editableBio");
-        document.getElementById("saveBtn").hidden = false;
-        displayName.innerHTML = "<input type=\"text\" class=\"form-control\" value=\"" +
-            displayNameVal +
-            "\" name=\"updatedDisplayName\"/>";
-        bio.innerHTML = "<textarea class=\"form-control\" rows=\"4\" cols=\"100\" name=\"updatedBio\">" +
-            bioVal +
-            "</textarea>";
 
-    }
-</script>
 
 <br/><br/>
 <div class="card" style="padding: 15px; width: inherit">
@@ -32,9 +19,9 @@
         <div class="col-md-12">
             <div style="float: right">
                 <div class="btn btn-group shadow-lg" style="padding: 0px;">
-                    <a class="btn btn-info" style="color: #fff" href="/recipes/user/@Model.UserId">My Recipes</a>
+                    <a class="btn btn-info" style="color: #fff" href="/recipes/user/@Model.UserId">Saved Recipes</a>
                     <a class="btn btn-info" style="color: #fff" href="/shopping/lists">Shopping Lists</a>
-                    <input type="button" class="btn btn-info" id="editBtn" value="Edit Profile" onclick="editable('@Model.DisplayName', '@Model.Bio')"/>
+                    <input type="button" class="btn btn-info" id="editBtn" value="Edit Profile"/>
                 </div>
             </div>
             <div>
@@ -145,9 +132,29 @@
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function editable(displayNameVal, bioVal) {
+        var displayName = document.getElementById("editableDisplayName");
+        var bio = document.getElementById("editableBio");
+        document.getElementById("saveBtn").hidden = false;
+        displayName.innerHTML = "<input type=\"text\" class=\"form-control\" value=\"" +
+            displayNameVal +
+            "\" name=\"updatedDisplayName\"/>";
+        bio.innerHTML = "<textarea class=\"form-control\" rows=\"4\" cols=\"100\" name=\"updatedBio\">" +
+            bioVal +
+            "</textarea>";
+    }
+
+    var editButton = document.getElementById("editBtn").addEventListener("click",
+        function() {
+            var name = "@Model.DisplayName";
+            var bio = "@Model.Bio";
+            editable(name, bio);
+        });
+</script>
